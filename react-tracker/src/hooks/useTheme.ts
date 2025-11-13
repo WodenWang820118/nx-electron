@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { themes } from '../themes';
 
 export const useTheme = () => {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
@@ -6,6 +7,23 @@ export const useTheme = () => {
   useEffect(() => {
     initTheme();
   }, []);
+
+  const switchPrimeReactTheme = (isDark: boolean) => {
+    const themeUrl = isDark ? themes.dark : themes.light;
+
+    // Find and update the theme link
+    let themeLink = document.getElementById('app-theme') as HTMLLinkElement;
+
+    if (!themeLink) {
+      // Create if it doesn't exist
+      themeLink = document.createElement('link');
+      themeLink.id = 'app-theme';
+      themeLink.rel = 'stylesheet';
+      document.head.appendChild(themeLink);
+    }
+
+    themeLink.href = themeUrl;
+  };
 
   const initTheme = () => {
     const saved = localStorage.getItem('theme');
@@ -17,9 +35,11 @@ export const useTheme = () => {
     if (useDark) {
       document.documentElement.classList.add('dark');
       setTheme('dark');
+      switchPrimeReactTheme(true);
     } else {
       document.documentElement.classList.remove('dark');
       setTheme('light');
+      switchPrimeReactTheme(false);
     }
   };
 
@@ -29,8 +49,10 @@ export const useTheme = () => {
 
     if (newTheme === 'dark') {
       document.documentElement.classList.add('dark');
+      switchPrimeReactTheme(true);
     } else {
       document.documentElement.classList.remove('dark');
+      switchPrimeReactTheme(false);
     }
 
     setTheme(newTheme);

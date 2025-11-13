@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import 'primereact/resources/primereact.min.css';
 @import 'primeicons/primeicons.css';
 
 /* Configure Tailwind v4 dark mode to use .dark class selector */
