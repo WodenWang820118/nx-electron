@@ -46,7 +46,7 @@ importers:
         version: 2.8.5
       elec-ng-nest:
         specifier: 'file:'
-        version: file:(fa1d06ad980e36fd23bf94042fa04758)
+        version: electron-tracker-suite@file:(fa1d06ad980e36fd23bf94042fa04758)
       electron-log:
         specifier: ^5.4.3
         version: 5.4.3
@@ -219,6 +219,9 @@ importers:
       '@nx/js':
         specifier: 22.0.3
         version: 22.0.3(@babel/traverse@7.28.5)(@swc-node/register@1.11.1(@swc/core@1.15.1(@swc/helpers@0.5.17))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.1(@swc/helpers@0.5.17))(nx@22.0.3(@swc-node/register@1.11.1(@swc/core@1.15.1(@swc/helpers@0.5.17))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.1(@swc/helpers@0.5.17)))
+      '@nx/maven':
+        specifier: 22.0.3
+        version: 22.0.3(nx@22.0.3(@swc-node/register@1.11.1(@swc/core@1.15.1(@swc/helpers@0.5.17))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.1(@swc/helpers@0.5.17)))
       '@nx/nest':
         specifier: 22.0.3
         version: 22.0.3(@babel/traverse@7.28.5)(@swc-node/register@1.11.1(@swc/core@1.15.1(@swc/helpers@0.5.17))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.1(@swc/helpers@0.5.17))(@types/node@24.10.1)(@zkochan/js-yaml@0.0.7)(babel-plugin-macros@3.1.0)(chokidar@4.0.3)(eslint@9.39.1(jiti@2.4.2))(nx@22.0.3(@swc-node/register@1.11.1(@swc/core@1.15.1(@swc/helpers@0.5.17))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.1(@swc/helpers@0.5.17)))(ts-node@10.9.2(@swc/core@1.15.1(@swc/helpers@0.5.17))(@types/node@24.10.1)(typescript@5.9.3))(typescript@5.9.3)
@@ -3087,6 +3090,9 @@ packages:
     peerDependenciesMeta:
       verdaccio:
         optional: true
+
+  '@nx/maven@22.0.3':
+    resolution: {integrity: sha512-67kqYMRXtbacqqJd1mX9BrIAVM15qMEZo7Dgq670AH5bgHSwmH2u26rtZ1M/yChrXvhvWKLrETlQ1gOBltsu8A==}
 
   '@nx/module-federation@22.0.3':
     resolution: {integrity: sha512-qhT/XNRqRUirAzYfNno4KFRVzI1vl2cI6MehumuqbvaGrKVededgcED3FpUesGQiHIbAI5r7uuI64S5WnD0daQ==}
@@ -6418,9 +6424,6 @@ packages:
     engines: {node: '>=0.10.0'}
     hasBin: true
 
-  'elec-ng-nest@file:':
-    resolution: {directory: '', type: directory}
-
   electron-installer-common@0.10.4:
     resolution: {integrity: sha512-8gMNPXfAqUE5CfXg8RL0vXpLE9HAaPkgLXVoHE3BMUzogMWenf4LmwQ27BdCUrEhkjrKl+igs2IHJibclR3z3Q==}
     engines: {node: '>= 10.0.0'}
@@ -6447,6 +6450,9 @@ packages:
 
   electron-to-chromium@1.5.250:
     resolution: {integrity: sha512-/5UMj9IiGDMOFBnN4i7/Ry5onJrAGSbOGo3s9FEKmwobGq6xw832ccET0CE3CkkMBZ8GJSlUIesZofpyurqDXw==}
+
+  'electron-tracker-suite@file:':
+    resolution: {directory: '', type: directory}
 
   electron-winstaller@5.4.0:
     resolution: {integrity: sha512-bO3y10YikuUwUuDUQRM4KfwNkKhnpVO7IPdbsrejwN9/AABJzzTQ4GeHwyzNSrVO+tEH3/Np255a3sVZpZDjvg==}
@@ -16276,6 +16282,14 @@ snapshots:
       - nx
       - supports-color
 
+  '@nx/maven@22.0.3(nx@22.0.3(@swc-node/register@1.11.1(@swc/core@1.15.1(@swc/helpers@0.5.17))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.1(@swc/helpers@0.5.17)))':
+    dependencies:
+      '@nx/devkit': 22.0.3(nx@22.0.3(@swc-node/register@1.11.1(@swc/core@1.15.1(@swc/helpers@0.5.17))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.1(@swc/helpers@0.5.17)))
+      '@xmldom/xmldom': 0.8.11
+      tslib: 2.8.1
+    transitivePeerDependencies:
+      - nx
+
   '@nx/module-federation@22.0.3(@babel/traverse@7.28.5)(@swc-node/register@1.11.1(@swc/core@1.15.1(@swc/helpers@0.5.17))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.1(@swc/helpers@0.5.17))(@swc/helpers@0.5.17)(nx@22.0.3(@swc-node/register@1.11.1(@swc/core@1.15.1(@swc/helpers@0.5.17))(@swc/types@0.1.25)(typescript@5.9.3))(@swc/core@1.15.1(@swc/helpers@0.5.17)))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(vue-tsc@2.2.12(typescript@5.9.3))':
     dependencies:
       '@module-federation/enhanced': 0.21.4(@rspack/core@1.6.2(@swc/helpers@0.5.17))(react-dom@19.2.0(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(vue-tsc@2.2.12(typescript@5.9.3))(webpack@5.102.1(@swc/core@1.15.1(@swc/helpers@0.5.17)))
@@ -20104,7 +20118,57 @@ snapshots:
     dependencies:
       jake: 10.9.4
 
-  elec-ng-nest@file:(fa1d06ad980e36fd23bf94042fa04758):
+  electron-installer-common@0.10.4:
+    dependencies:
+      '@electron/asar': 3.4.1
+      '@malept/cross-spawn-promise': 1.1.1
+      debug: 4.4.3
+      fs-extra: 9.1.0
+      glob: 7.2.3
+      lodash: 4.17.21
+      parse-author: 2.0.0
+      semver: 7.7.3
+      tmp-promise: 3.0.3
+    optionalDependencies:
+      '@types/fs-extra': 9.0.13
+    transitivePeerDependencies:
+      - supports-color
+    optional: true
+
+  electron-installer-debian@3.2.0:
+    dependencies:
+      '@malept/cross-spawn-promise': 1.1.1
+      debug: 4.4.3
+      electron-installer-common: 0.10.4
+      fs-extra: 9.1.0
+      get-folder-size: 2.0.1
+      lodash: 4.17.21
+      word-wrap: 1.2.5
+      yargs: 16.2.0
+    transitivePeerDependencies:
+      - supports-color
+    optional: true
+
+  electron-installer-redhat@3.4.0:
+    dependencies:
+      '@malept/cross-spawn-promise': 1.1.1
+      debug: 4.4.3
+      electron-installer-common: 0.10.4
+      fs-extra: 9.1.0
+      lodash: 4.17.21
+      word-wrap: 1.2.5
+      yargs: 16.2.0
+    transitivePeerDependencies:
+      - supports-color
+    optional: true
+
+  electron-is-dev@3.0.1: {}
+
+  electron-log@5.4.3: {}
+
+  electron-to-chromium@1.5.250: {}
+
+  electron-tracker-suite@file:(fa1d06ad980e36fd23bf94042fa04758):
     dependencies:
       '@nestjs/common': 11.1.8(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@nestjs/config': 4.0.2(@nestjs/common@11.1.8(reflect-metadata@0.2.2)(rxjs@7.8.2))(rxjs@7.8.2)
@@ -20181,56 +20245,6 @@ snapshots:
       - ts-node
       - typeorm-aurora-data-api-driver
       - typescript
-
-  electron-installer-common@0.10.4:
-    dependencies:
-      '@electron/asar': 3.4.1
-      '@malept/cross-spawn-promise': 1.1.1
-      debug: 4.4.3
-      fs-extra: 9.1.0
-      glob: 7.2.3
-      lodash: 4.17.21
-      parse-author: 2.0.0
-      semver: 7.7.3
-      tmp-promise: 3.0.3
-    optionalDependencies:
-      '@types/fs-extra': 9.0.13
-    transitivePeerDependencies:
-      - supports-color
-    optional: true
-
-  electron-installer-debian@3.2.0:
-    dependencies:
-      '@malept/cross-spawn-promise': 1.1.1
-      debug: 4.4.3
-      electron-installer-common: 0.10.4
-      fs-extra: 9.1.0
-      get-folder-size: 2.0.1
-      lodash: 4.17.21
-      word-wrap: 1.2.5
-      yargs: 16.2.0
-    transitivePeerDependencies:
-      - supports-color
-    optional: true
-
-  electron-installer-redhat@3.4.0:
-    dependencies:
-      '@malept/cross-spawn-promise': 1.1.1
-      debug: 4.4.3
-      electron-installer-common: 0.10.4
-      fs-extra: 9.1.0
-      lodash: 4.17.21
-      word-wrap: 1.2.5
-      yargs: 16.2.0
-    transitivePeerDependencies:
-      - supports-color
-    optional: true
-
-  electron-is-dev@3.0.1: {}
-
-  electron-log@5.4.3: {}
-
-  electron-to-chromium@1.5.250: {}
 
   electron-winstaller@5.4.0:
     dependencies:

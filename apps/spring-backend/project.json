@@ -1,0 +1,42 @@
+{
+  "name": "spring-backend",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/spring-backend/src",
+  "targets": {
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "mvn spring-boot:run -pl com.wodendev:spring-backend -Dspring-boot.run.profiles=${NODE_ENV}"
+      },
+      "configurations": {
+        "development": {
+          "command": "mvn spring-boot:run -pl com.wodendev:spring-backend -Dspring-boot.run.profiles=development"
+        },
+        "production": {
+          "command": "mvn spring-boot:run -pl com.wodendev:spring-backend -Dspring-boot.run.profiles=production"
+        }
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "mvn spring-boot:build-image -pl com.wodendev:spring-backend"
+      },
+      "outputs": ["{projectRoot}/target"]
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "mvn spring-boot:test-run -pl com.wodendev:spring-backend"
+      }
+    },
+    "clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "mvn clean -pl com.wodendev:spring-backend"
+      }
+    }
+  },
+  "tags": ["backend", "java", "spring"]
+}
