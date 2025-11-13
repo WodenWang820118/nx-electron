@@ -1,0 +1,77 @@
+@import 'tailwindcss';
+@import 'primeicons/primeicons.css';
+
+/* Configure Tailwind v4 dark mode to use .dark class selector */
+@variant dark (.dark &);
+
+/* Hint browsers about color scheme when dark mode is active */
+.dark {
+  color-scheme: dark;
+}
+
+
+html {
+  -webkit-text-size-adjust: 100%;
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    'Noto Sans',
+    sans-serif,
+    'Apple Color Emoji',
+    'Segoe UI Emoji',
+    'Segoe UI Symbol',
+    'Noto Color Emoji';
+  line-height: 1.5;
+  tab-size: 4;
+  scroll-behavior: smooth;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  font-family: inherit;
+  line-height: inherit;
+  margin: 0;
+  background-color: rgb(249 250 251); /* bg-gray-50 */
+  transition: background-color 0.2s ease-in-out;
+}
+
+.dark body {
+  background-color: rgb(2 6 23); /* bg-slate-950 */
+}
+h1,
+h2,
+p,
+pre {
+  margin: 0;
+}
+*,
+::before,
+::after {
+  box-sizing: border-box;
+  border-width: 0;
+  border-style: solid;
+  border-color: currentColor;
+}
+h1,
+h2 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+pre {
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
+}
