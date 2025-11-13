@@ -1,3 +1,20 @@
 packages:
-  - 'apps/*'
-  - 'libs/*'
+  - apps/*
+  - libs/*
+
+ignoredBuiltDependencies:
+  - '@parcel/watcher'
+  - '@scarf/scarf'
+  - elec-ng-nest
+  - electron-winstaller
+  - lmdb
+  - msgpackr-extract
+  - unrs-resolver
+
+onlyBuiltDependencies:
+  - '@nestjs/core'
+  - '@swc/core'
+  - electron
+  - esbuild
+  - nx
+  - sqlite3

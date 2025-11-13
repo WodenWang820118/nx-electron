@@ -37,7 +37,7 @@ importers:
         version: 4.1.17
       elec-ng-nest:
         specifier: 'file:'
-        version: file:(536d777a44dc33b070898e3e856d06a5)
+        version: file:(9631216f38b205ee377e4716792fc2b1)
       electron-log:
         specifier: ^5.4.3
         version: 5.4.3
@@ -62,6 +62,9 @@ importers:
       sequelize-typescript:
         specifier: ^2.1.6
         version: 2.1.6(@types/node@24.10.1)(@types/validator@13.15.8)(reflect-metadata@0.2.2)(sequelize@6.37.7(sqlite3@5.1.7))
+      sqlite3:
+        specifier: ^5.1.7
+        version: 5.1.7
       tailwindcss:
         specifier: ^4.1.17
         version: 4.1.17
@@ -267,9 +270,6 @@ importers:
       react-refresh:
         specifier: ~0.18.0
         version: 0.18.0
-      sqlite3:
-        specifier: ^5.1.7
-        version: 5.1.7
       ts-node:
         specifier: 10.9.2
         version: 10.9.2(@swc/core@1.15.1(@swc/helpers@0.5.17))(@types/node@24.10.1)(typescript@5.9.3)
@@ -5665,6 +5665,7 @@ packages:
 
   'elec-ng-nest@file:':
     resolution: {directory: '', type: directory}
+    engines: {node: '>=24.11.1'}
 
   electron-installer-common@0.10.4:
     resolution: {integrity: sha512-8gMNPXfAqUE5CfXg8RL0vXpLE9HAaPkgLXVoHE3BMUzogMWenf4LmwQ27BdCUrEhkjrKl+igs2IHJibclR3z3Q==}
@@ -14235,7 +14236,7 @@ snapshots:
 
   '@npmcli/fs@4.0.0':
     dependencies:
-      semver: 7.7.3
+      semver: 7.7.2
 
   '@npmcli/git@6.0.3':
     dependencies:
@@ -17447,7 +17448,7 @@ snapshots:
     dependencies:
       jake: 10.9.4
 
-  elec-ng-nest@file:(536d777a44dc33b070898e3e856d06a5):
+  elec-ng-nest@file:(9631216f38b205ee377e4716792fc2b1):
     dependencies:
       '@nestjs/common': 11.1.8(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@nestjs/config': 4.0.2(@nestjs/common@11.1.8(reflect-metadata@0.2.2)(rxjs@7.8.2))(rxjs@7.8.2)
@@ -17466,6 +17467,7 @@ snapshots:
       rxjs: 7.8.2
       sequelize: 6.37.7(sqlite3@5.1.7)
       sequelize-typescript: 2.1.6(@types/node@24.10.1)(@types/validator@13.15.8)(reflect-metadata@0.2.2)(sequelize@6.37.7(sqlite3@5.1.7))
+      sqlite3: 5.1.7
       tailwindcss: 4.1.17
       tailwindcss-primeui: 0.6.1(tailwindcss@4.1.17)
       tslib: 2.8.1
@@ -17489,6 +17491,7 @@ snapshots:
       - '@types/validator'
       - babel-plugin-macros
       - better-sqlite3
+      - bluebird
       - class-transformer
       - class-validator
       - ibm_db
@@ -17505,7 +17508,6 @@ snapshots:
       - redis
       - snowflake-sdk
       - sql.js
-      - sqlite3
       - supports-color
       - tedious
       - ts-node
@@ -20172,7 +20174,7 @@ snapshots:
       make-fetch-happen: 14.0.3
       nopt: 8.1.0
       proc-log: 5.0.0
-      semver: 7.7.3
+      semver: 7.7.2
       tar: 7.5.2
       tinyglobby: 0.2.15
       which: 5.0.0
@@ -20242,7 +20244,7 @@ snapshots:
 
   npm-install-checks@7.1.2:
     dependencies:
-      semver: 7.7.3
+      semver: 7.7.2
 
   npm-normalize-package-bin@4.0.0: {}
 
