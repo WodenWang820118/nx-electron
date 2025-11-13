@@ -1,3 +1,4 @@
+const baseConfig = require("../eslint.base.config.mjs");
 {
   "extends": ["../.eslintrc.json"],
   "ignorePatterns": ["!**/*"],

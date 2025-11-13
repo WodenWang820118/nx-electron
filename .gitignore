@@ -43,3 +43,5 @@ Thumbs.db
 *nx
 *vite
 database.sqlite3
+vite.config.*.timestamp*
+vitest.config.*.timestamp*
