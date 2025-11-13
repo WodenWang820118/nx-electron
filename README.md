@@ -1,4 +1,4 @@
-# Nx-ng-nest-elec
+# Nx-Electron
 
 ## Overview
 
@@ -35,5 +35,15 @@ Please run
 ```bash
 pnpm run make
 ```
+
+## Approve Builds
+
+In case the NestJS backend with TypeORM doesn't find the sqilte3 as dependencies, please run
+
+```bash
+pnpm approve-builds
+```
+
+to select and execute post script installations.
 
 The command generates a zip file and it's for Windows machine. Please change the settings in the `forge.config.js` to build the app according to the OS.

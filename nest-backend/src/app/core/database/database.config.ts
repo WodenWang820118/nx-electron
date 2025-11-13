@@ -1,7 +1,6 @@
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { join } from 'path';
-import { cwd } from 'process';
-import { Task } from '../../feature/task/entities/task.entity';
+import { join } from 'node:path';
+import { cwd } from 'node:process';
 
 const DATABASE_NAME = 'database.sqlite3';
 
@@ -24,9 +23,9 @@ function getDatabaseConfig(): TypeOrmModuleOptions {
   return {
     type: 'sqlite',
     database: getDatabasePath(),
-    entities: [Task],
     synchronize: true, // Set to false in production
     logging: process.env.NODE_ENV === 'dev',
+    autoLoadEntities: true,
   };
 }
 
