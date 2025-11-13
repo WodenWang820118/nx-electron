@@ -33,7 +33,12 @@ const onSubmit = async () => {
   };
 
   try {
-    await taskService.addTask(newTask);
+    // Convert the task to match backend expectations (day as ISO string)
+    const taskPayload = {
+      ...newTask,
+      day: newTask.day instanceof Date ? newTask.day.toISOString() : newTask.day,
+    };
+    await taskService.addTask(taskPayload as Task);
     router.push('/');
   } catch (error) {
     console.error('Failed to add task:', error);

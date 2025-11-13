@@ -1,7 +1,14 @@
-@import "tailwindcss/preflight" layer(tailwind-base);
-@import "tailwindcss/utilities" layer(tailwind-utilities);
+@import 'tailwindcss';
+@import 'primeicons/primeicons.css';
 
-@layer tailwind-base, primevue, tailwind-utilities;
+/* Configure Tailwind v4 dark mode to use .dark class selector */
+@variant dark (.dark &);
+
+/* Hint browsers about color scheme when dark mode is active */
+.dark {
+  color-scheme: dark;
+}
+
 
 html {
   -webkit-text-size-adjust: 100%;
@@ -24,10 +31,21 @@ html {
   tab-size: 4;
   scroll-behavior: smooth;
 }
+
+html.dark {
+  color-scheme: dark;
+}
+
 body {
   font-family: inherit;
   line-height: inherit;
   margin: 0;
+  background-color: rgb(249 250 251); /* bg-gray-50 */
+  transition: background-color 0.2s ease-in-out;
+}
+
+.dark body {
+  background-color: rgb(2 6 23); /* bg-slate-950 */
 }
 h1,
 h2,

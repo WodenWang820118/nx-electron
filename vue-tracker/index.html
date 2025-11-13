@@ -5,6 +5,26 @@
     <link rel="icon" href="/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>vue-tracker</title>
+    <script>
+      (function () {
+        try {
+          var key = 'theme';
+          var saved = localStorage.getItem(key);
+          var prefersDark =
+            globalThis.matchMedia &&
+            globalThis.matchMedia('(prefers-color-scheme: dark)').matches;
+          var useDark = saved ? saved === 'dark' : prefersDark;
+          var root = document.documentElement;
+          if (useDark) {
+            root.classList.add('dark');
+          } else {
+            root.classList.remove('dark');
+          }
+        } catch (e) {
+          console.error('[theme] failed to apply initial theme', e);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

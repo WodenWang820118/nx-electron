@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, defineProps, defineEmits } from 'vue';
+import { computed } from 'vue';
 import Card from 'primevue/card';
 import Button from 'primevue/button';
 import { taskService } from '../../services/task.service';
