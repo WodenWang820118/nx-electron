@@ -45,3 +45,16 @@ Thumbs.db
 database.sqlite3
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
+
+# Java / Maven
+**/target/
+apps/spring-backend/target/
+**/.mvn/
+**/.maven/
+*.class
+*.jar
+*.war
+*.ear
+dependency-reduced-pom.xml
+release.properties
+buildNumber.properties
