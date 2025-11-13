@@ -83,7 +83,7 @@
     "@rspack/plugin-react-refresh": "^1.5.3",
     "@schematics/angular": "20.3.10",
     "@swc-node/register": "1.11.1",
-    "@swc/core": "1.13.5",
+    "@swc/core": "1.15.1",
     "@swc/helpers": "0.5.17",
     "@types/node": "24.10.1",
     "@typescript-eslint/eslint-plugin": "8.46.4",
@@ -102,7 +102,7 @@
     "ts-node": "10.9.2",
     "typescript": "5.9.3",
     "typescript-eslint": "^8.46.4",
-    "vite": "7.1.8",
+    "vite": "7.2.2",
     "vitest": "^3.2.4"
   },
   "dependencies": {
