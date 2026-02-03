@@ -7,16 +7,35 @@ import { MakerZIP } from '@electron-forge/maker-zip';
 import { AutoUnpackNativesPlugin } from '@electron-forge/plugin-auto-unpack-natives';
 import { VitePlugin } from '@electron-forge/plugin-vite';
 
-const config = {
-  packagerConfig: {
-    asar: true,
+const APP_PROFILE = (process.env.APP_PROFILE || 'ng-nest').trim().toLowerCase();
+
+const PROFILES = {
+  /** Angular + Nest backend (default) */
+  'ng-nest': {
+    extraResource: [
+      './dist/ng-tracker',
+      // Backend is expected to live at process.resourcesPath/<backend-name> (see src/path-utils.ts)
+      './dist/nest-backend',
+    ],
+  },
+
+  /** Backward-compatible: package everything (larger output) */
+  all: {
     extraResource: [
       './dist/ng-tracker',
       './dist/vue-tracker',
       './dist/react-tracker',
-      './dist/nest-backend/main.js',
-      './dist/nest-backend/node_modules',
+      './dist/nest-backend',
     ],
+  },
+};
+
+const resolvedProfile = PROFILES[APP_PROFILE] ?? PROFILES['ng-nest'];
+
+const config = {
+  packagerConfig: {
+    asar: true,
+    extraResource: resolvedProfile.extraResource,
   },
   rebuildConfig: {},
   makers: [

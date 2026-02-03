@@ -1,5 +1,5 @@
-import { fork } from 'child_process';
-import { join } from 'path';
+import { fork } from 'node:child_process';
+import { join } from 'node:path';
 import { BrowserWindow } from 'electron';
 import * as constants from './constants';
 import * as environmentUtils from './environment-utils';
@@ -8,6 +8,7 @@ import * as pathUtils from './path-utils';
 
 function startBackend(resourcesPath: string) {
   let env: NodeJS.ProcessEnv;
+  const backendName = pathUtils.getBackendName();
   const rootBackendFolderPath = pathUtils.getRootBackendFolderPath(
     environmentUtils.getEnvironment(),
     resourcesPath
@@ -15,7 +16,7 @@ function startBackend(resourcesPath: string) {
 
   fileUtils.logToFile(
     rootBackendFolderPath,
-    'Starting backend service...',
+    `Starting backend service (${backendName})...`,
     'info'
   );
 
@@ -44,13 +45,6 @@ function startBackend(resourcesPath: string) {
       };
       break;
     case 'prod':
-      env = {
-        ...process.env,
-        DATABASE_PATH: databasePath,
-        PORT: '5000',
-        NODE_ENV: 'prod',
-      };
-      break;
     default:
       env = {
         ...process.env,
@@ -77,11 +71,13 @@ function startBackend(resourcesPath: string) {
 
 async function checkIfPortIsOpen(
   urls: string[],
-  maxAttempts = 20,
-  timeout = 1000,
   resourcesPath: string,
-  loadingWindow: BrowserWindow | null
+  loadingWindow: BrowserWindow | null,
+  maxAttempts?: number,
+  timeout?: number,
 ) {
+  const resolvedMaxAttempts = maxAttempts ?? 20;
+  const resolvedTimeout = timeout ?? 1000;
   const logFilePath = join(
     pathUtils.getRootBackendFolderPath(
       environmentUtils.getEnvironment(),
@@ -95,7 +91,7 @@ async function checkIfPortIsOpen(
     `Checking if ports are open: ${urls}`,
     'info'
   );
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+  for (let attempt = 1; attempt <= resolvedMaxAttempts; attempt++) {
     for (const url of urls) {
       try {
         fileUtils.logToFile(
@@ -139,15 +135,15 @@ async function checkIfPortIsOpen(
       }
     }
 
-    if (attempt < maxAttempts) {
-      console.log(`Waiting ${timeout}ms before next attempt...`);
-      await new Promise((resolve) => setTimeout(resolve, timeout));
+    if (attempt < resolvedMaxAttempts) {
+      console.log(`Waiting ${resolvedTimeout}ms before next attempt...`);
+      await new Promise((resolve) => setTimeout(resolve, resolvedTimeout));
     }
   }
 
   loadingWindow?.close();
   throw new Error(
-    `Failed to connect to the server after ${maxAttempts} attempts`
+    `Failed to connect to the server after ${resolvedMaxAttempts} attempts`
   );
 }
 

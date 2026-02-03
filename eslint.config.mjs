@@ -4,7 +4,16 @@ export default [
   ...nx.configs['flat/base'],
   ...nx.configs['flat/typescript'],
   ...nx.configs['flat/javascript'],
-  {      "ignores": [
+  {
+    files: ['src/**/*.ts'],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.json'],
+      },
+    },
+  },
+  {
+      "ignores": [
         "**/dist",
         "**/node_modules",
         "**/coverage/**",

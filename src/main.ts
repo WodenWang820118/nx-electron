@@ -1,8 +1,8 @@
 
 import { app, BrowserWindow } from 'electron';
-import { join } from 'path';
+import { join } from 'node:path';
 import { updateElectronApp } from 'update-electron-app';
-import { ChildProcess } from 'child_process';
+import { ChildProcess } from 'node:child_process';
 import log from 'electron-log';
 import * as pathUtils from './path-utils';
 import * as environmentUtils from './environment-utils';
@@ -26,10 +26,10 @@ app.whenReady().then(async () => {
       if (
         await backend.checkIfPortIsOpen(
           constants.URLs,
+          process.resourcesPath,
+          loadingWindow,
           20,
           2000,
-          process.resourcesPath,
-          loadingWindow
         )
       ) {
         loadingWindow?.close();
