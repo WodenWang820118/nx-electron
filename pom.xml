@@ -6,8 +6,9 @@
     <packaging>jar</packaging>
 
     <properties>
-        <java.version>17</java.version>
-        <spring.boot.version>3.1.6</spring.boot.version>
+        <java.version>25</java.version>
+        <spring.boot.version>4.0.2</spring.boot.version>
+        <maven.compiler.release>${java.version}</maven.compiler.release>
     </properties>
 
     <dependencyManagement>
@@ -73,9 +74,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
+                <version>3.14.0</version>
                 <configuration>
-                    <release>17</release>
+                    <release>${maven.compiler.release}</release>
                 </configuration>
             </plugin>
             <plugin>

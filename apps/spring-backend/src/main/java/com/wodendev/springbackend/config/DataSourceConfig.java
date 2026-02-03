@@ -1,17 +1,18 @@
 package com.wodendev.springbackend.config;
 
-import org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomizer;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.jpa.JpaVendorAdapter;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
 import javax.sql.DataSource;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
 
 @Configuration
 public class DataSourceConfig {
@@ -63,11 +64,12 @@ public class DataSourceConfig {
     }
     
     @Bean
-    public HibernatePropertiesCustomizer hibernatePropertiesCustomizer() {
-        return (hibernateProperties) -> {
-            if (isSQLite) {
-                hibernateProperties.put("hibernate.dialect", "org.hibernate.community.dialect.SQLiteDialect");
-            }
-        };
+    @DependsOn("dataSource")
+    public JpaVendorAdapter jpaVendorAdapter() {
+        HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
+        if (isSQLite) {
+            adapter.setDatabasePlatform("org.hibernate.community.dialect.SQLiteDialect");
+        }
+        return adapter;
     }
 }
