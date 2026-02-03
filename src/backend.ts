@@ -1,10 +1,65 @@
-import { fork } from 'node:child_process';
+import { fork, spawn, type ChildProcess } from 'node:child_process';
 import { join } from 'node:path';
 import { BrowserWindow } from 'electron';
 import * as constants from './constants';
 import * as environmentUtils from './environment-utils';
 import * as fileUtils from './file-utils';
 import * as pathUtils from './path-utils';
+
+function resolveDefaultPortForEnvironment(env: string) {
+  switch (env) {
+    case 'dev':
+    case 'staging':
+      return '3000';
+    case 'prod':
+    default:
+      return '5000';
+  }
+}
+
+function resolveJavaCommand() {
+  const javaHome = process.env.JAVA_HOME;
+  if (javaHome) {
+    // JAVA_HOME on Windows points to the JDK root; java is under bin.
+    return join(javaHome, 'bin', process.platform === 'win32' ? 'java.exe' : 'java');
+  }
+
+  return process.platform === 'win32' ? 'java.exe' : 'java';
+}
+
+function startSpringBackend(
+  rootBackendFolderPath: string,
+  env: NodeJS.ProcessEnv,
+  port: string
+): ChildProcess {
+  const jarPath = join(rootBackendFolderPath, 'app.jar');
+  const javaCmd = resolveJavaCommand();
+  const args = ['-jar', jarPath, `--server.port=${port}`];
+
+  fileUtils.logToFile(
+    rootBackendFolderPath,
+    `Starting Spring backend: ${javaCmd} ${args.join(' ')}`,
+    'info'
+  );
+
+  const child = spawn(javaCmd, args, {
+    env: {
+      ...env,
+      SERVER_PORT: port,
+      SPRING_PROFILES_ACTIVE:
+        env.SPRING_PROFILES_ACTIVE ?? env.NODE_ENV ?? 'prod',
+    },
+  });
+
+  child.stdout?.on('data', (buf) => {
+    fileUtils.logToFile(rootBackendFolderPath, buf.toString(), 'info');
+  });
+  child.stderr?.on('data', (buf) => {
+    fileUtils.logToFile(rootBackendFolderPath, buf.toString(), 'error');
+  });
+
+  return child;
+}
 
 function startBackend(resourcesPath: string) {
   let env: NodeJS.ProcessEnv;
@@ -27,45 +82,28 @@ function startBackend(resourcesPath: string) {
     constants.ROOT_DATABASE_NAME
   );
 
-  switch (environmentUtils.getEnvironment()) {
-    case 'dev':
-      env = {
-        ...process.env,
-        DATABASE_PATH: databasePath,
-        PORT: '3000',
-        NODE_ENV: 'dev',
-      };
-      break;
-    case 'staging':
-      env = {
-        ...process.env,
-        DATABASE_PATH: databasePath,
-        PORT: '3000',
-        NODE_ENV: 'staging',
-      };
-      break;
-    case 'prod':
-    default:
-      env = {
-        ...process.env,
-        DATABASE_PATH: databasePath,
-        PORT: '5000',
-        NODE_ENV: 'prod',
-      };
-      break;
-  }
+  const runtimeEnv = environmentUtils.getEnvironment();
+  const resolvedPort =
+    (process.env.PORT && String(process.env.PORT)) ||
+    resolveDefaultPortForEnvironment(runtimeEnv);
+
+  env = {
+    ...process.env,
+    DATABASE_PATH: databasePath,
+    PORT: resolvedPort,
+    NODE_ENV: runtimeEnv,
+  };
 
   fileUtils.logToFile(
     rootBackendFolderPath,
     `Starting server with environment: ${JSON.stringify(env, null, 2)}`
   );
 
-  fileUtils.logToFile(
-    rootBackendFolderPath,
-    `Server path: ${serverPath}`,
-    'info'
-  );
+  if (backendName === 'spring-backend') {
+    return startSpringBackend(rootBackendFolderPath, env, resolvedPort);
+  }
 
+  fileUtils.logToFile(rootBackendFolderPath, `Server path: ${serverPath}`, 'info');
   return fork(serverPath, { env });
 }
 
@@ -73,11 +111,11 @@ async function checkIfPortIsOpen(
   urls: string[],
   resourcesPath: string,
   loadingWindow: BrowserWindow | null,
-  maxAttempts?: number,
-  timeout?: number,
+  maxAttempts = 20,
+  timeout = 1000,
 ) {
-  const resolvedMaxAttempts = maxAttempts ?? 20;
-  const resolvedTimeout = timeout ?? 1000;
+  const resolvedMaxAttempts = maxAttempts;
+  const resolvedTimeout = timeout;
   const logFilePath = join(
     pathUtils.getRootBackendFolderPath(
       environmentUtils.getEnvironment(),
@@ -129,7 +167,7 @@ async function checkIfPortIsOpen(
         console.error(`Attempt ${attempt}: Error connecting to ${url}:`, error);
         fileUtils.logToFile(
           logFilePath,
-          `Attempt ${attempt}: ${(error as any).toString()}`,
+          `Attempt ${attempt}: ${String(error)}`,
           'error'
         );
       }

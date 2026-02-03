@@ -15,6 +15,18 @@ declare const MAIN_WINDOW_VITE_NAME: string;
 let loadingWindow: null | BrowserWindow = null;
 let mainWindow: null | BrowserWindow = null;
 
+function resolveTaskApiUrl() {
+  // Prefer bundler-agnostic override.
+  if (process.env.TASK_API_URL) return process.env.TASK_API_URL;
+
+  // Keep compatibility with existing Vite-based scripts.
+  if (process.env.VITE_TASK_API_URL) return process.env.VITE_TASK_API_URL;
+
+  // Fall back to PORT so profiles like Spring-on-5000 work.
+  const port = process.env.PORT || '3000';
+  return `http://localhost:${port}/tasks`;
+}
+
 function createLoadingWindow() {
   console.log('Creating loading window');
   if (loadingWindow) {
@@ -84,7 +96,11 @@ function createWindow(resourcesPath: string) {
     );
 
     if (existsSync(entryPath)) {
-      mainWindow.loadFile(entryPath);
+      mainWindow.loadFile(entryPath, {
+        query: {
+          taskApiUrl: resolveTaskApiUrl(),
+        },
+      });
     } else {
       const devFrontendPath = pathUtils.getDevFrontendPath();
       fileUtils.logToFile(
@@ -92,7 +108,11 @@ function createWindow(resourcesPath: string) {
         `Dev fallback file: ${devFrontendPath}`,
         'info'
       );
-      mainWindow.loadFile(devFrontendPath);
+      mainWindow.loadFile(devFrontendPath, {
+        query: {
+          taskApiUrl: resolveTaskApiUrl(),
+        },
+      });
       mainWindow.webContents.openDevTools();
     }
   } catch (e) {
