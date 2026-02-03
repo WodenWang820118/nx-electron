@@ -12,6 +12,8 @@ const config = {
     asar: true,
     extraResource: [
       './dist/ng-tracker',
+      './dist/vue-tracker',
+      './dist/react-tracker',
       './dist/nest-backend/main.js',
       './dist/nest-backend/node_modules',
     ],

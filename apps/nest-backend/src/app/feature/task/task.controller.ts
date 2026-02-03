@@ -30,7 +30,15 @@ export class TaskController {
 
   @Post('/create')
   async createTask(@Body() task: CreateTaskDto) {
-    return await this.taskService.create(task);
+    try {
+      console.log('Received task creation request:', task);
+      const result = await this.taskService.create(task);
+      console.log('Task created successfully:', result);
+      return result;
+    } catch (error) {
+      console.error('Error creating task:', error);
+      throw error;
+    }
   }
 
   @Put(':id')

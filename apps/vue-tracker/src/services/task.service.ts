@@ -1,6 +1,7 @@
 import axios from 'axios';
 import type {
   Task,
+  CreateTaskDto,
   PaginatedResponse,
   TaskQueryParams,
 } from '../interfaces/task.interface';
@@ -12,6 +13,50 @@ const http = axios.create({
     'Content-Type': 'application/json',
   },
 });
+
+// Add request interceptor for debugging
+http.interceptors.request.use(
+  (config) => {
+    console.log('API Request:', {
+      method: config.method,
+      url: config.url,
+      baseURL: config.baseURL,
+      fullURL: `${config.baseURL}${config.url}`,
+      data: config.data,
+      headers: config.headers,
+    });
+    return config;
+  },
+  (error) => {
+    console.error('Request interceptor error:', error);
+    return Promise.reject(error);
+  }
+);
+
+// Add response interceptor for debugging
+http.interceptors.response.use(
+  (response) => {
+    console.log('API Response:', {
+      status: response.status,
+      statusText: response.statusText,
+      data: response.data,
+    });
+    return response;
+  },
+  (error) => {
+    console.error('Response interceptor error:', {
+      message: error.message,
+      response: error.response?.data,
+      status: error.response?.status,
+      config: {
+        method: error.config?.method,
+        url: error.config?.url,
+        baseURL: error.config?.baseURL,
+      },
+    });
+    return Promise.reject(error);
+  }
+);
 
 export const taskService = {
   async getTasks(params?: TaskQueryParams): Promise<PaginatedResponse<Task>> {
@@ -44,7 +89,7 @@ export const taskService = {
     }
   },
 
-  async addTask(task: Task): Promise<Task> {
+  async addTask(task: CreateTaskDto): Promise<Task> {
     try {
       const response = await http.post<Task>('/create', task);
       return response.data;

@@ -5,6 +5,13 @@ export interface Task {
   reminder: boolean;
 }
 
+export interface CreateTaskDto {
+  id: string;
+  text: string;
+  day: string;
+  reminder: boolean;
+}
+
 export interface PaginatedResponse<T> {
   data: T[];
   total: number;

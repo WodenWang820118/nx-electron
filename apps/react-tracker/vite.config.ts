@@ -6,6 +6,7 @@ import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
 import path from 'node:path';
 
 export default defineConfig(() => ({
+  base: './',
   root: path.resolve(__dirname),
   cacheDir: path.resolve(__dirname, '../../node_modules/.vite/react-tracker'),
   css: {
@@ -36,7 +37,7 @@ export default defineConfig(() => ({
   //  plugins: [ nxViteTsPaths() ],
   // },
   build: {
-    outDir: './dist/react-tracker',
+    outDir: '../../dist/react-tracker',
     emptyOutDir: true,
     reportCompressedSize: true,
     commonjsOptions: {

@@ -7,7 +7,7 @@ import InputText from 'primevue/inputtext';
 import DatePicker from 'primevue/datepicker';
 import Checkbox from 'primevue/checkbox';
 import { taskService } from '../../services/task.service';
-import type { Task } from '../../interfaces/task.interface';
+import type { CreateTaskDto } from '../../interfaces/task.interface';
 
 const router = useRouter();
 
@@ -25,24 +25,37 @@ const onSubmit = async () => {
     return;
   }
 
-  const newTask: Task = {
+  const newTask: CreateTaskDto = {
     id: uuidv4(),
     text: taskText.value,
-    day: taskDate.value,
+    day: taskDate.value instanceof Date ? taskDate.value.toISOString() : taskDate.value,
     reminder: taskReminder.value,
   };
 
+  console.log('Submitting task:', newTask);
+  console.log('API URL:', import.meta.env.VITE_TASK_API_URL || 'http://localhost:3000/tasks');
+
   try {
-    // Convert the task to match backend expectations (day as ISO string)
-    const taskPayload = {
-      ...newTask,
-      day: newTask.day instanceof Date ? newTask.day.toISOString() : newTask.day,
-    };
-    await taskService.addTask(taskPayload as Task);
+    const result = await taskService.addTask(newTask);
+    console.log('Task added successfully:', result);
     router.push('/');
-  } catch (error) {
-    console.error('Failed to add task:', error);
-    alert('Failed to add task. Please try again.');
+  } catch (error: any) {
+    console.error('Failed to add task - Full error:', error);
+    console.error('Error message:', error.message);
+    console.error('Error response:', error.response?.data);
+    console.error('Error status:', error.response?.status);
+    console.error('Error config:', error.config);
+    
+    let errorMessage = 'Failed to add task. ';
+    if (error.response) {
+      errorMessage += `Server responded with status ${error.response.status}: ${JSON.stringify(error.response.data)}`;
+    } else if (error.request) {
+      errorMessage += `No response received from server. Please check if the backend is running on ${import.meta.env.VITE_TASK_API_URL || 'http://localhost:3000/tasks'}`;
+    } else {
+      errorMessage += `Error: ${error.message}`;
+    }
+    
+    alert(errorMessage);
   }
 };
 </script>

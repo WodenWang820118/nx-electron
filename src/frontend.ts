@@ -14,6 +14,7 @@ declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
 declare const MAIN_WINDOW_VITE_NAME: string;
 
 let loadingWindow: null | BrowserWindow = null;
+let mainWindow: null | BrowserWindow = null;
 
 function createLoadingWindow() {
   console.log('Creating loading window');
@@ -63,7 +64,11 @@ function createLoadingWindow() {
 }
 
 function createWindow(resourcesPath: string) {
-  const mainWindow = new BrowserWindow({
+  if (mainWindow) {
+    return mainWindow;
+  }
+
+  mainWindow = new BrowserWindow({
     width: 1400,
     height: 900,
     webPreferences: {
@@ -72,25 +77,38 @@ function createWindow(resourcesPath: string) {
   });
 
   try {
-    const entryPath = pathUtils.getProductionFrontendPath(resourcesPath);
-    fileUtils.logToFile(
-      pathUtils.getRootBackendFolderPath(
-        environmentUtils.getEnvironment(),
-        resourcesPath
-      ),
-      `Loading file: ${entryPath}`,
-      'info'
-    );
-    if (!existsSync(entryPath)) {
-      const devFrontendPath = pathUtils.getDevFrontendPath();
-      mainWindow.loadFile(devFrontendPath);
+    const frontendName = pathUtils.getFrontendName();
+
+    if (MAIN_WINDOW_VITE_DEV_SERVER_URL && frontendName === 'ng-tracker') {
+      mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
       mainWindow.webContents.openDevTools();
     } else {
-      mainWindow.loadFile(entryPath);
+      const entryPath = pathUtils.getProductionFrontendPath(resourcesPath);
+      fileUtils.logToFile(
+        pathUtils.getRootBackendFolderPath(
+          environmentUtils.getEnvironment(),
+          resourcesPath
+        ),
+        `Loading file: ${entryPath}`,
+        'info'
+      );
+      if (!existsSync(entryPath)) {
+        const devFrontendPath = pathUtils.getDevFrontendPath();
+        mainWindow.loadFile(devFrontendPath);
+        mainWindow.webContents.openDevTools();
+      } else {
+        mainWindow.loadFile(entryPath);
+      }
     }
   } catch (e) {
     console.error(e);
   }
+
+  mainWindow.on('closed', () => {
+    mainWindow = null;
+  });
+
+  return mainWindow;
 }
 
 export { createLoadingWindow, createWindow };
