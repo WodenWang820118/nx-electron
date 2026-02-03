@@ -31,9 +31,9 @@ if [ ! -x "$MAVEN_BIN" ]; then
 fi
 
 echo "Building spring-backend with local Maven..."
-"$MAVEN_BIN" -f "$ROOT_DIR/pom.xml" -DskipTests package
+"$MAVEN_BIN" -f "$ROOT_DIR/../../pom.xml" -DskipTests package
 
-JAR="$ROOT_DIR/target/spring-backend-0.0.1-SNAPSHOT.jar"
+JAR="$ROOT_DIR/../../target/spring-backend-0.0.1-SNAPSHOT.jar"
 if [ -f "$JAR" ]; then
   echo "Build succeeded. Jar: $JAR"
   echo "To run: java -jar $JAR"

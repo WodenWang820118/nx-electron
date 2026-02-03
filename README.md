@@ -52,6 +52,31 @@ pnpm run dev-back
 pnpm run dev-electron
 ```
 
+## Spring Backend (Java)
+
+Prereqs: JDK 17 and Maven (`mvn`) on PATH.
+
+Build Spring backend jar into `dist/spring-backend/app.jar`:
+
+```bash
+pnpm run build-spring
+```
+
+Run Spring backend in terminal (without Electron):
+
+```bash
+pnpm run dev-spring
+```
+
+Run Electron (dev) with Spring backend:
+
+```bash
+pnpm run dev-electron-vue-spring
+```
+
+Note: The Spring-backed Electron dev scripts use port 5000 by default to avoid common port 3000 conflicts.
+They also rebuild the frontend (skip Nx cache) so `VITE_TASK_API_URL` is applied.
+
 ## Build
 
 Please run

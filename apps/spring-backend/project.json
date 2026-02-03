@@ -7,34 +7,34 @@
     "serve": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "mvn spring-boot:run -pl com.wodendev:spring-backend -Dspring-boot.run.profiles=${NODE_ENV}"
+        "command": "mvn -f pom.xml spring-boot:run"
       },
       "configurations": {
         "development": {
-          "command": "mvn spring-boot:run -pl com.wodendev:spring-backend -Dspring-boot.run.profiles=development"
+          "command": "mvn -f pom.xml spring-boot:run"
         },
         "production": {
-          "command": "mvn spring-boot:run -pl com.wodendev:spring-backend -Dspring-boot.run.profiles=production"
+          "command": "mvn -f pom.xml spring-boot:run"
         }
       }
     },
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "mvn spring-boot:build-image -pl com.wodendev:spring-backend"
+        "command": "mvn -f pom.xml -DskipTests package && node tools/prepare-spring-dist.mjs"
       },
-      "outputs": ["{projectRoot}/target"]
+      "outputs": ["{workspaceRoot}/dist/spring-backend"]
     },
     "test": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "mvn spring-boot:test-run -pl com.wodendev:spring-backend"
+        "command": "mvn -f pom.xml test"
       }
     },
     "clean": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "mvn clean -pl com.wodendev:spring-backend"
+        "command": "mvn -f pom.xml clean"
       }
     }
   },

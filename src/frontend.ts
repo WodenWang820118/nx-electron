@@ -1,8 +1,7 @@
 import { BrowserWindow } from 'electron';
-import { join } from 'path';
-import { existsSync } from 'fs';
+import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
+import { dirname, join } from 'node:path';
 import * as pathUtils from './path-utils';
 import * as fileUtils from './file-utils';
 import * as environmentUtils from './environment-utils';
@@ -77,28 +76,24 @@ function createWindow(resourcesPath: string) {
   });
 
   try {
-    const frontendName = pathUtils.getFrontendName();
+    const entryPath = pathUtils.getProductionFrontendPath(resourcesPath);
+    fileUtils.logToFile(
+      pathUtils.getRootBackendFolderPath(environmentUtils.getEnvironment(), resourcesPath),
+      `Loading file: ${entryPath}`,
+      'info'
+    );
 
-    if (MAIN_WINDOW_VITE_DEV_SERVER_URL && frontendName === 'ng-tracker') {
-      mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
-      mainWindow.webContents.openDevTools();
+    if (existsSync(entryPath)) {
+      mainWindow.loadFile(entryPath);
     } else {
-      const entryPath = pathUtils.getProductionFrontendPath(resourcesPath);
+      const devFrontendPath = pathUtils.getDevFrontendPath();
       fileUtils.logToFile(
-        pathUtils.getRootBackendFolderPath(
-          environmentUtils.getEnvironment(),
-          resourcesPath
-        ),
-        `Loading file: ${entryPath}`,
+        pathUtils.getRootBackendFolderPath(environmentUtils.getEnvironment(), resourcesPath),
+        `Dev fallback file: ${devFrontendPath}`,
         'info'
       );
-      if (!existsSync(entryPath)) {
-        const devFrontendPath = pathUtils.getDevFrontendPath();
-        mainWindow.loadFile(devFrontendPath);
-        mainWindow.webContents.openDevTools();
-      } else {
-        mainWindow.loadFile(entryPath);
-      }
+      mainWindow.loadFile(devFrontendPath);
+      mainWindow.webContents.openDevTools();
     }
   } catch (e) {
     console.error(e);

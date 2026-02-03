@@ -5,6 +5,9 @@ import { existsSync } from 'node:fs';
 type FrontendName = 'ng-tracker' | 'vue-tracker' | 'react-tracker';
 type BackendName = 'nest-backend' | 'express-backend' | 'spring-backend';
 
+const KNOWN_FRONTENDS: FrontendName[] = ['ng-tracker', 'vue-tracker', 'react-tracker'];
+const KNOWN_BACKENDS: BackendName[] = ['nest-backend', 'express-backend', 'spring-backend'];
+
 function normalizeFrontendName(value?: string): FrontendName {
   const normalized = (value || '').trim().toLowerCase();
 
@@ -24,8 +27,25 @@ function normalizeFrontendName(value?: string): FrontendName {
   }
 }
 
+function inferFrontendNameFromProfile(profile?: string): FrontendName {
+  const normalized = (profile || '').trim().toLowerCase();
+  if (!normalized) return 'ng-tracker';
+
+  if (normalized.includes('vue')) return 'vue-tracker';
+  if (normalized.includes('react')) return 'react-tracker';
+  if (normalized.includes('ng') || normalized.includes('angular')) return 'ng-tracker';
+
+  return 'ng-tracker';
+}
+
 function getFrontendName(): FrontendName {
-  return normalizeFrontendName(process.env.FRONTEND);
+  // FRONTEND takes precedence for local overrides.
+  if (process.env.FRONTEND) {
+    return normalizeFrontendName(process.env.FRONTEND);
+  }
+
+  // Otherwise infer from APP_PROFILE (e.g. ng-nest, vue-express, react-spring).
+  return inferFrontendNameFromProfile(process.env.APP_PROFILE);
 }
 
 function normalizeBackendName(value?: string): BackendName {
@@ -79,6 +99,35 @@ function resolveFirstExistingPath(paths: string[]) {
   return paths[0];
 }
 
+function isDefined<T>(value: T | undefined | null): value is T {
+  return value !== undefined && value !== null;
+}
+
+function unique<T>(values: T[]): T[] {
+  return Array.from(new Set(values));
+}
+
+function resolveBackendFolderInProd(resourcesPath: string): string {
+  const preferredFromEnv = process.env.BACKEND
+    ? normalizeBackendName(process.env.BACKEND)
+    : undefined;
+  const preferredFromProfile = inferBackendNameFromProfile(process.env.APP_PROFILE);
+
+  const orderedNames = unique(
+    [preferredFromEnv, preferredFromProfile, ...KNOWN_BACKENDS].filter(isDefined)
+  );
+
+  const candidates: string[] = orderedNames.map((name) => join(resourcesPath, name));
+
+  // Legacy layout support: only consider resourcesPath itself if it actually contains main.js
+  const legacyMain = join(resourcesPath, 'main.js');
+  if (existsSync(legacyMain)) {
+    candidates.push(resourcesPath);
+  }
+
+  return resolveFirstExistingPath(candidates);
+}
+
 function getRootBackendFolderPath(env: string, resourcesPath: string) {
   const backendName = getBackendName();
 
@@ -87,25 +136,36 @@ function getRootBackendFolderPath(env: string, resourcesPath: string) {
     case 'staging':
       return join(cwd(), 'dist', backendName);
     case 'prod':
-      // New layout (profile-aware): resources/<backend-name>/main.js
+      // New layout (profile-aware): resources/<backend-name>/...
       // Legacy layout (old packages): resources/main.js
-      return resolveFirstExistingPath([
-        join(resourcesPath, backendName),
-        resourcesPath,
-      ]);
+      return resolveBackendFolderInProd(resourcesPath);
     default:
       return join(cwd(), 'dist', backendName);
   }
 }
 
 function getProductionFrontendPath(resourcesPath: string) {
-  const frontendName = getFrontendName();
+  const preferredFromEnv = process.env.FRONTEND
+    ? normalizeFrontendName(process.env.FRONTEND)
+    : undefined;
+  const preferredFromProfile = inferFrontendNameFromProfile(process.env.APP_PROFILE);
+  const orderedNames = unique(
+    [preferredFromEnv, preferredFromProfile, ...KNOWN_FRONTENDS].filter(isDefined)
+  );
 
-  if (frontendName === 'ng-tracker') {
-    return join(resourcesPath, 'ng-tracker', 'browser', 'index.html');
+  const candidatePaths: string[] = [];
+  for (const name of orderedNames) {
+    if (name === 'ng-tracker') {
+      candidatePaths.push(
+        join(resourcesPath, 'ng-tracker', 'browser', 'index.html'),
+        join(resourcesPath, 'ng-tracker', 'index.html')
+      );
+    } else {
+      candidatePaths.push(join(resourcesPath, name, 'index.html'));
+    }
   }
 
-  return join(resourcesPath, frontendName, 'index.html');
+  return resolveFirstExistingPath(candidatePaths);
 }
 
 function getDevFrontendPath() {

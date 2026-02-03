@@ -19,6 +19,46 @@ const PROFILES = {
     ],
   },
 
+  /** Angular + Express backend */
+  'ng-express': {
+    extraResource: ['./dist/ng-tracker', './dist/express-backend'],
+  },
+
+  /** Angular + Spring backend */
+  'ng-spring': {
+    extraResource: ['./dist/ng-tracker', './dist/spring-backend'],
+  },
+
+  /** Vue + Nest backend */
+  'vue-nest': {
+    extraResource: ['./dist/vue-tracker', './dist/nest-backend'],
+  },
+
+  /** Vue + Express backend */
+  'vue-express': {
+    extraResource: ['./dist/vue-tracker', './dist/express-backend'],
+  },
+
+  /** Vue + Spring backend */
+  'vue-spring': {
+    extraResource: ['./dist/vue-tracker', './dist/spring-backend'],
+  },
+
+  /** React + Nest backend */
+  'react-nest': {
+    extraResource: ['./dist/react-tracker', './dist/nest-backend'],
+  },
+
+  /** React + Express backend */
+  'react-express': {
+    extraResource: ['./dist/react-tracker', './dist/express-backend'],
+  },
+
+  /** React + Spring backend */
+  'react-spring': {
+    extraResource: ['./dist/react-tracker', './dist/spring-backend'],
+  },
+
   /** Backward-compatible: package everything (larger output) */
   all: {
     extraResource: [
@@ -26,6 +66,7 @@ const PROFILES = {
       './dist/vue-tracker',
       './dist/react-tracker',
       './dist/nest-backend',
+      './dist/express-backend',
     ],
   },
 };
