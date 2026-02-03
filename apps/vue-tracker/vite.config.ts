@@ -5,6 +5,7 @@ import { nxCopyAssetsPlugin } from '@nx/vite/plugins/nx-copy-assets.plugin';
 import path from 'node:path';
 
 export default defineConfig(() => ({
+  base: './',
   root: path.resolve(__dirname),
   cacheDir: path.resolve(__dirname, '../../node_modules/.vite/vue-tracker'),
   resolve: {
@@ -32,7 +33,7 @@ export default defineConfig(() => ({
   //  plugins: [ nxViteTsPaths() ],
   // },
   build: {
-    outDir: './dist/vue-tracker',
+    outDir: '../../dist/vue-tracker',
     emptyOutDir: true,
     reportCompressedSize: true,
     commonjsOptions: {

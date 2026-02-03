@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 import { Button } from 'primereact/button';
-import { InputText } from 'primereact/inputtext';
 import { Calendar } from 'primereact/calendar';
 import { Checkbox } from 'primereact/checkbox';
 import { taskService } from '../../services/task.service';
@@ -63,14 +62,14 @@ export const TaskForm = () => {
           >
             Task Description
           </label>
-          <InputText
+          <input
             id="text"
             value={taskText}
             onChange={(e) => setTaskText(e.target.value)}
             type="text"
             placeholder="Enter task description"
             data-test-id="input-task"
-            className="w-full"
+            className="p-inputtext p-component w-full"
           />
         </div>
 

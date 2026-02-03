@@ -1,5 +1,5 @@
 import { StrictMode } from 'react';
-import { BrowserRouter } from 'react-router-dom';
+import { BrowserRouter, HashRouter } from 'react-router-dom';
 import * as ReactDOM from 'react-dom/client';
 import { PrimeReactProvider } from 'primereact/api';
 import App from './app/app';
@@ -30,9 +30,15 @@ const root = ReactDOM.createRoot(
 root.render(
   <StrictMode>
     <PrimeReactProvider>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      {globalThis.location?.protocol === 'file:' ? (
+        <HashRouter>
+          <App />
+        </HashRouter>
+      ) : (
+        <BrowserRouter>
+          <App />
+        </BrowserRouter>
+      )}
     </PrimeReactProvider>
   </StrictMode>
 );

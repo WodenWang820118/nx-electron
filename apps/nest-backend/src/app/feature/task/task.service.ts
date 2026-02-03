@@ -17,8 +17,17 @@ export class TaskService {
   ) {}
 
   async create(createTaskDto: CreateTaskDto): Promise<Task> {
-    const task = this.taskRepository.create(createTaskDto);
-    return await this.taskRepository.save(task);
+    try {
+      console.log('Creating task with DTO:', createTaskDto);
+      const task = this.taskRepository.create(createTaskDto);
+      console.log('Task entity created:', task);
+      const savedTask = await this.taskRepository.save(task);
+      console.log('Task saved to database:', savedTask);
+      return savedTask;
+    } catch (error) {
+      console.error('Error in task service create method:', error);
+      throw error;
+    }
   }
 
   async findAll(query?: PaginationQueryDto): Promise<PaginatedResponse<Task>> {

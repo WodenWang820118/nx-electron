@@ -6,8 +6,13 @@ import type {
 } from '../interfaces/task.interface';
 import { environment } from '../config/environment';
 
+const resolvedBaseUrl =
+  typeof window !== 'undefined' && window.location?.protocol === 'file:'
+    ? 'http://localhost:3000/tasks'
+    : environment.taskApiUrl;
+
 const http = axios.create({
-  baseURL: environment.taskApiUrl,
+  baseURL: resolvedBaseUrl,
   headers: {
     'Content-Type': 'application/json',
   },

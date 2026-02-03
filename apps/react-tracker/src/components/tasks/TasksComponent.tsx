@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { taskService } from '../../services/task.service';
 import { TaskItem } from './TaskItem';
-import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
@@ -68,14 +67,14 @@ export const TasksComponent = () => {
           <span className="relative flex-1 md:flex-none">
             <IconField>
               <InputIcon className="pi pi-search" />
-              <InputText
+              <input
                 value={searchQuery}
                 onChange={(e) => {
                   setSearchQuery(e.target.value);
                   setFirst(0);
                 }}
                 placeholder="Search tasks..."
-                className="w-full"
+                className="p-inputtext p-component w-full"
               />
             </IconField>
           </span>
