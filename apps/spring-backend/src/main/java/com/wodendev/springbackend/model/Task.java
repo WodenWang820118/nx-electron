@@ -10,22 +10,24 @@ import java.time.LocalDateTime;
 @Table(name = "tasks")
 public class Task {
     @Id
-    @Column(length = 64)
+    @Column(name = "id", length = 64)
     private String id;
 
-    @Column(nullable = false)
+    @Column(name = "text", nullable = false)
     private String text;
 
-    @Column
+    @Column(name = "day")
     private String day;
 
-    @Column
+    @Column(name = "reminder")
     private boolean reminder;
 
     @CreationTimestamp
+    @Column(name = "createdAt")
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
+    @Column(name = "updatedAt")
     private LocalDateTime updatedAt;
 
     public Task() {

@@ -7,14 +7,14 @@
     "serve": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "mvn -f pom.xml spring-boot:run"
+        "command": "mvn -f apps/spring-backend/pom.xml spring-boot:run"
       },
       "configurations": {
         "development": {
-          "command": "mvn -f pom.xml spring-boot:run"
+          "command": "mvn -f apps/spring-backend/pom.xml spring-boot:run"
         },
         "production": {
-          "command": "mvn -f pom.xml spring-boot:run"
+          "command": "mvn -f apps/spring-backend/pom.xml spring-boot:run"
         }
       }
     },

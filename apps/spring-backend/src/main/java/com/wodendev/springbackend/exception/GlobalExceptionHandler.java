@@ -123,8 +123,17 @@ public class GlobalExceptionHandler {
 
     private boolean isDevProfile() {
         try {
-            return environment != null && environment.acceptsProfiles("dev");
-        } catch (Exception ignored) {
+            if (environment == null) {
+                return false;
+            }
+            String[] active = environment.getActiveProfiles();
+            for (String p : active) {
+                if ("dev".equalsIgnoreCase(p)) {
+                    return true;
+                }
+            }
+            return false;
+        } catch (Exception _) {
             return false;
         }
     }
