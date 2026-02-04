@@ -1,7 +1,7 @@
 package com.wodendev.springbackend.service;
 
+import com.wodendev.springbackend.entity.Task;
 import com.wodendev.springbackend.exception.DatabaseExceptionHelper;
-import com.wodendev.springbackend.model.Task;
 
 import lombok.RequiredArgsConstructor;
 

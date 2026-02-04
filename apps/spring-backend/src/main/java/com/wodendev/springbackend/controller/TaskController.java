@@ -1,7 +1,8 @@
 package com.wodendev.springbackend.controller;
 
-import com.wodendev.springbackend.model.Task;
+import com.wodendev.springbackend.entity.Task;
 import com.wodendev.springbackend.service.TaskService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
