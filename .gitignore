@@ -58,3 +58,4 @@ apps/spring-backend/target/
 dependency-reduced-pom.xml
 release.properties
 buildNumber.properties
+/java-runtime

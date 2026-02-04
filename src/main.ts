@@ -1,8 +1,8 @@
 
 import { app, BrowserWindow } from 'electron';
-import { join } from 'path';
+import { join } from 'node:path';
 import { updateElectronApp } from 'update-electron-app';
-import { ChildProcess } from 'child_process';
+import { ChildProcess } from 'node:child_process';
 import log from 'electron-log';
 import * as pathUtils from './path-utils';
 import * as environmentUtils from './environment-utils';
@@ -19,17 +19,38 @@ updateElectronApp({
 let server: ChildProcess;
 
 app.whenReady().then(async () => {
-  server = backend.startBackend(process.resourcesPath);
   const loadingWindow = frontend.createLoadingWindow();
-  server.once('spawn', async () => {
+  const logPath = join(
+    pathUtils.getRootBackendFolderPath(
+      environmentUtils.getEnvironment(),
+      process.resourcesPath
+    )
+  );
+
+  try {
+    fileUtils.logToFile(logPath, 'Initializing backend server...', 'info');
+    server = backend.startBackend(process.resourcesPath);
+    
+    // For spawn processes, the 'spawn' event fires synchronously or very quickly
+    // Use a more reliable approach with error handling
+    if (!server.pid) {
+      const errorMsg = 'Failed to start backend: Process ID not assigned';
+      console.error(errorMsg);
+      fileUtils.logToFile(logPath, errorMsg, 'error');
+      loadingWindow?.close();
+      return;
+    }
+
+    fileUtils.logToFile(logPath, `Backend process started with PID: ${server.pid}`, 'info');
+
     try {
       if (
         await backend.checkIfPortIsOpen(
           constants.URLs,
+          process.resourcesPath,
+          loadingWindow,
           20,
           2000,
-          process.resourcesPath,
-          loadingWindow
         )
       ) {
         loadingWindow?.close();
@@ -38,19 +59,17 @@ app.whenReady().then(async () => {
         );
       }
     } catch (error) {
-      console.error(error);
-      fileUtils.logToFile(
-        join(
-          pathUtils.getRootBackendFolderPath(
-            environmentUtils.getEnvironment(),
-            process.resourcesPath
-          )
-        ),
-        String(error),
-        'error'
-      );
+      const errorMessage = `Port check failed: ${error instanceof Error ? error.message : String(error)}`;
+      console.error(errorMessage);
+      fileUtils.logToFile(logPath, errorMessage, 'error');
+      loadingWindow?.close();
     }
-  });
+  } catch (error) {
+    const errorMessage = `Failed to initialize backend: ${error instanceof Error ? error.message : String(error)}\\nStack: ${error instanceof Error ? error.stack : ''}`;
+    console.error(errorMessage);
+    fileUtils.logToFile(logPath, errorMessage, 'error');
+    loadingWindow?.close();
+  }
 
   server.on('message', (message: string) => {
     console.log(`Message from child: ${message}`);

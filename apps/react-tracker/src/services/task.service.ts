@@ -6,10 +6,14 @@ import type {
 } from '../interfaces/task.interface';
 import { environment } from '../config/environment';
 
+const viteTaskApiUrl = import.meta.env.VITE_TASK_API_URL as string | undefined;
+
 const resolvedBaseUrl =
-  typeof window !== 'undefined' && window.location?.protocol === 'file:'
+  viteTaskApiUrl ??
+  (globalThis.window !== undefined &&
+  globalThis.window.location?.protocol === 'file:'
     ? 'http://localhost:3000/tasks'
-    : environment.taskApiUrl;
+    : environment.taskApiUrl);
 
 const http = axios.create({
   baseURL: resolvedBaseUrl,

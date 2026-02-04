@@ -1,13 +1,69 @@
-import { fork } from 'child_process';
-import { join } from 'path';
+import { fork, spawn, type ChildProcess } from 'node:child_process';
+import { join } from 'node:path';
 import { BrowserWindow } from 'electron';
 import * as constants from './constants';
 import * as environmentUtils from './environment-utils';
 import * as fileUtils from './file-utils';
 import * as pathUtils from './path-utils';
 
+function resolveDefaultPortForEnvironment(env: string) {
+  switch (env) {
+    case 'dev':
+    case 'staging':
+      return '3000';
+    case 'prod':
+    default:
+      return '5000';
+  }
+}
+
+function resolveJavaCommand() {
+  const javaHome = process.env.JAVA_HOME;
+  if (javaHome) {
+    // JAVA_HOME on Windows points to the JDK root; java is under bin.
+    return join(javaHome, 'bin', process.platform === 'win32' ? 'java.exe' : 'java');
+  }
+
+  return process.platform === 'win32' ? 'java.exe' : 'java';
+}
+
+function startSpringBackend(
+  rootBackendFolderPath: string,
+  env: NodeJS.ProcessEnv,
+  port: string
+): ChildProcess {
+  const jarPath = join(rootBackendFolderPath, 'app.jar');
+  const javaCmd = resolveJavaCommand();
+  const springProfile = env.SPRING_PROFILES_ACTIVE ?? env.NODE_ENV ?? 'prod';
+  const args = ['-jar', jarPath, `--server.port=${port}`, `--spring.profiles.active=${springProfile}`];
+
+  fileUtils.logToFile(
+    rootBackendFolderPath,
+    `Starting Spring backend: ${javaCmd} ${args.join(' ')}`,
+    'info'
+  );
+
+  const child = spawn(javaCmd, args, {
+    env: {
+      ...env,
+      SERVER_PORT: port,
+      SPRING_PROFILES_ACTIVE: springProfile,
+    },
+  });
+
+  child.stdout?.on('data', (buf) => {
+    fileUtils.logToFile(rootBackendFolderPath, buf.toString(), 'info');
+  });
+  child.stderr?.on('data', (buf) => {
+    fileUtils.logToFile(rootBackendFolderPath, buf.toString(), 'error');
+  });
+
+  return child;
+}
+
 function startBackend(resourcesPath: string) {
   let env: NodeJS.ProcessEnv;
+  const backendName = pathUtils.getBackendName();
   const rootBackendFolderPath = pathUtils.getRootBackendFolderPath(
     environmentUtils.getEnvironment(),
     resourcesPath
@@ -15,7 +71,7 @@ function startBackend(resourcesPath: string) {
 
   fileUtils.logToFile(
     rootBackendFolderPath,
-    'Starting backend service...',
+    `Starting backend service (${backendName})...`,
     'info'
   );
 
@@ -26,62 +82,45 @@ function startBackend(resourcesPath: string) {
     constants.ROOT_DATABASE_NAME
   );
 
-  switch (environmentUtils.getEnvironment()) {
-    case 'dev':
-      env = {
-        ...process.env,
-        DATABASE_PATH: databasePath,
-        PORT: '3000',
-        NODE_ENV: 'dev',
-      };
-      break;
-    case 'staging':
-      env = {
-        ...process.env,
-        DATABASE_PATH: databasePath,
-        PORT: '3000',
-        NODE_ENV: 'staging',
-      };
-      break;
-    case 'prod':
-      env = {
-        ...process.env,
-        DATABASE_PATH: databasePath,
-        PORT: '5000',
-        NODE_ENV: 'prod',
-      };
-      break;
-    default:
-      env = {
-        ...process.env,
-        DATABASE_PATH: databasePath,
-        PORT: '5000',
-        NODE_ENV: 'prod',
-      };
-      break;
-  }
+  const runtimeEnv = environmentUtils.getEnvironment();
+  const resolvedPort =
+    (process.env.PORT && String(process.env.PORT)) ||
+    resolveDefaultPortForEnvironment(runtimeEnv);
+
+  env = {
+    ...process.env,
+    DATABASE_PATH: databasePath,
+    PORT: resolvedPort,
+    NODE_ENV: runtimeEnv,
+    // Ensure backend identification is available to child processes
+    BACKEND: backendName,
+    APP_PROFILE: process.env.APP_PROFILE || '',
+  };
 
   fileUtils.logToFile(
     rootBackendFolderPath,
     `Starting server with environment: ${JSON.stringify(env, null, 2)}`
   );
 
-  fileUtils.logToFile(
-    rootBackendFolderPath,
-    `Server path: ${serverPath}`,
-    'info'
-  );
+  if (backendName === 'spring-backend') {
+    const jarPath = join(rootBackendFolderPath, 'app.jar');
+    fileUtils.logToFile(rootBackendFolderPath, `Server path: ${jarPath}`, 'info');
+    return startSpringBackend(rootBackendFolderPath, env, resolvedPort);
+  }
 
+  fileUtils.logToFile(rootBackendFolderPath, `Server path: ${serverPath}`, 'info');
   return fork(serverPath, { env });
 }
 
 async function checkIfPortIsOpen(
   urls: string[],
+  resourcesPath: string,
+  loadingWindow: BrowserWindow | null,
   maxAttempts = 20,
   timeout = 1000,
-  resourcesPath: string,
-  loadingWindow: BrowserWindow | null
 ) {
+  const resolvedMaxAttempts = maxAttempts;
+  const resolvedTimeout = timeout;
   const logFilePath = join(
     pathUtils.getRootBackendFolderPath(
       environmentUtils.getEnvironment(),
@@ -95,7 +134,7 @@ async function checkIfPortIsOpen(
     `Checking if ports are open: ${urls}`,
     'info'
   );
-  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+  for (let attempt = 1; attempt <= resolvedMaxAttempts; attempt++) {
     for (const url of urls) {
       try {
         fileUtils.logToFile(
@@ -133,21 +172,21 @@ async function checkIfPortIsOpen(
         console.error(`Attempt ${attempt}: Error connecting to ${url}:`, error);
         fileUtils.logToFile(
           logFilePath,
-          `Attempt ${attempt}: ${(error as any).toString()}`,
+          `Attempt ${attempt}: ${String(error)}`,
           'error'
         );
       }
     }
 
-    if (attempt < maxAttempts) {
-      console.log(`Waiting ${timeout}ms before next attempt...`);
-      await new Promise((resolve) => setTimeout(resolve, timeout));
+    if (attempt < resolvedMaxAttempts) {
+      console.log(`Waiting ${resolvedTimeout}ms before next attempt...`);
+      await new Promise((resolve) => setTimeout(resolve, resolvedTimeout));
     }
   }
 
   loadingWindow?.close();
   throw new Error(
-    `Failed to connect to the server after ${maxAttempts} attempts`
+    `Failed to connect to the server after ${resolvedMaxAttempts} attempts`
   );
 }
 

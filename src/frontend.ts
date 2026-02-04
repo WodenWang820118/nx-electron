@@ -1,8 +1,7 @@
 import { BrowserWindow } from 'electron';
-import { join } from 'path';
-import { existsSync } from 'fs';
+import { existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
+import { dirname, join } from 'node:path';
 import * as pathUtils from './path-utils';
 import * as fileUtils from './file-utils';
 import * as environmentUtils from './environment-utils';
@@ -15,6 +14,18 @@ declare const MAIN_WINDOW_VITE_NAME: string;
 
 let loadingWindow: null | BrowserWindow = null;
 let mainWindow: null | BrowserWindow = null;
+
+function resolveTaskApiUrl() {
+  // Prefer bundler-agnostic override.
+  if (process.env.TASK_API_URL) return process.env.TASK_API_URL;
+
+  // Keep compatibility with existing Vite-based scripts.
+  if (process.env.VITE_TASK_API_URL) return process.env.VITE_TASK_API_URL;
+
+  // Fall back to PORT so profiles like Spring-on-5000 work.
+  const port = process.env.PORT || '3000';
+  return `http://localhost:${port}/tasks`;
+}
 
 function createLoadingWindow() {
   console.log('Creating loading window');
@@ -77,28 +88,32 @@ function createWindow(resourcesPath: string) {
   });
 
   try {
-    const frontendName = pathUtils.getFrontendName();
+    const entryPath = pathUtils.getProductionFrontendPath(resourcesPath);
+    fileUtils.logToFile(
+      pathUtils.getRootBackendFolderPath(environmentUtils.getEnvironment(), resourcesPath),
+      `Loading file: ${entryPath}`,
+      'info'
+    );
 
-    if (MAIN_WINDOW_VITE_DEV_SERVER_URL && frontendName === 'ng-tracker') {
-      mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
-      mainWindow.webContents.openDevTools();
+    if (existsSync(entryPath)) {
+      mainWindow.loadFile(entryPath, {
+        query: {
+          taskApiUrl: resolveTaskApiUrl(),
+        },
+      });
     } else {
-      const entryPath = pathUtils.getProductionFrontendPath(resourcesPath);
+      const devFrontendPath = pathUtils.getDevFrontendPath();
       fileUtils.logToFile(
-        pathUtils.getRootBackendFolderPath(
-          environmentUtils.getEnvironment(),
-          resourcesPath
-        ),
-        `Loading file: ${entryPath}`,
+        pathUtils.getRootBackendFolderPath(environmentUtils.getEnvironment(), resourcesPath),
+        `Dev fallback file: ${devFrontendPath}`,
         'info'
       );
-      if (!existsSync(entryPath)) {
-        const devFrontendPath = pathUtils.getDevFrontendPath();
-        mainWindow.loadFile(devFrontendPath);
-        mainWindow.webContents.openDevTools();
-      } else {
-        mainWindow.loadFile(entryPath);
-      }
+      mainWindow.loadFile(devFrontendPath, {
+        query: {
+          taskApiUrl: resolveTaskApiUrl(),
+        },
+      });
+      mainWindow.webContents.openDevTools();
     }
   } catch (e) {
     console.error(e);

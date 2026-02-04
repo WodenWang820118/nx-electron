@@ -108,14 +108,6 @@
         "buildDepsTargetName": "build-deps",
         "watchDepsTargetName": "watch-deps"
       }
-    },
-    {
-      "plugin": "@nx/maven",
-      "options": {
-        "buildTargetName": "build",
-        "serveTargetName": "serve",
-        "cleanTargetName": "clean"
-      }
     }
   ]
 }

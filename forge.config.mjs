@@ -7,15 +7,78 @@ import { MakerZIP } from '@electron-forge/maker-zip';
 import { AutoUnpackNativesPlugin } from '@electron-forge/plugin-auto-unpack-natives';
 import { VitePlugin } from '@electron-forge/plugin-vite';
 
-const config = {
-  packagerConfig: {
-    asar: true,
+const APP_PROFILE = (process.env.APP_PROFILE || 'ng-nest').trim().toLowerCase();
+
+const PROFILES = {
+  /** Angular + Nest backend (default) */
+  'ng-nest': {
+    extraResource: [
+      './dist/ng-tracker',
+      // Backend is expected to live at process.resourcesPath/<backend-name> (see src/path-utils.ts)
+      './dist/nest-backend',
+    ],
+  },
+
+  /** Angular + Express backend */
+  'ng-express': {
+    extraResource: ['./dist/ng-tracker', './dist/express-backend'],
+  },
+
+  /** Angular + Spring backend */
+  'ng-spring': {
+    extraResource: ['./dist/ng-tracker', './dist/spring-backend'],
+  },
+
+  /** Vue + Nest backend */
+  'vue-nest': {
+    extraResource: ['./dist/vue-tracker', './dist/nest-backend'],
+  },
+
+  /** Vue + Express backend */
+  'vue-express': {
+    extraResource: ['./dist/vue-tracker', './dist/express-backend'],
+  },
+
+  /** Vue + Spring backend */
+  'vue-spring': {
+    extraResource: ['./dist/vue-tracker', './dist/spring-backend'],
+  },
+
+  /** React + Nest backend */
+  'react-nest': {
+    extraResource: ['./dist/react-tracker', './dist/nest-backend'],
+  },
+
+  /** React + Express backend */
+  'react-express': {
+    extraResource: ['./dist/react-tracker', './dist/express-backend'],
+  },
+
+  /** React + Spring backend */
+  'react-spring': {
+    extraResource: ['./dist/react-tracker', './dist/spring-backend'],
+  },
+
+  /** Backward-compatible: package everything (larger output) */
+  all: {
     extraResource: [
       './dist/ng-tracker',
       './dist/vue-tracker',
       './dist/react-tracker',
-      './dist/nest-backend/main.js',
-      './dist/nest-backend/node_modules',
+      './dist/nest-backend',
+      './dist/express-backend',
+    ],
+  },
+};
+
+const resolvedProfile = PROFILES[APP_PROFILE] ?? PROFILES['ng-nest'];
+
+const config = {
+  packagerConfig: {
+    asar: true,
+    extraResource: [
+      ...resolvedProfile.extraResource,
+      './java-runtime',
     ],
   },
   rebuildConfig: {},
