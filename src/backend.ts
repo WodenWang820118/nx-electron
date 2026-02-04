@@ -34,7 +34,8 @@ function startSpringBackend(
 ): ChildProcess {
   const jarPath = join(rootBackendFolderPath, 'app.jar');
   const javaCmd = resolveJavaCommand();
-  const args = ['-jar', jarPath, `--server.port=${port}`];
+  const springProfile = env.SPRING_PROFILES_ACTIVE ?? env.NODE_ENV ?? 'prod';
+  const args = ['-jar', jarPath, `--server.port=${port}`, `--spring.profiles.active=${springProfile}`];
 
   fileUtils.logToFile(
     rootBackendFolderPath,
@@ -46,8 +47,7 @@ function startSpringBackend(
     env: {
       ...env,
       SERVER_PORT: port,
-      SPRING_PROFILES_ACTIVE:
-        env.SPRING_PROFILES_ACTIVE ?? env.NODE_ENV ?? 'prod',
+      SPRING_PROFILES_ACTIVE: springProfile,
     },
   });
 
@@ -92,6 +92,9 @@ function startBackend(resourcesPath: string) {
     DATABASE_PATH: databasePath,
     PORT: resolvedPort,
     NODE_ENV: runtimeEnv,
+    // Ensure backend identification is available to child processes
+    BACKEND: backendName,
+    APP_PROFILE: process.env.APP_PROFILE || '',
   };
 
   fileUtils.logToFile(
@@ -100,6 +103,8 @@ function startBackend(resourcesPath: string) {
   );
 
   if (backendName === 'spring-backend') {
+    const jarPath = join(rootBackendFolderPath, 'app.jar');
+    fileUtils.logToFile(rootBackendFolderPath, `Server path: ${jarPath}`, 'info');
     return startSpringBackend(rootBackendFolderPath, env, resolvedPort);
   }
 

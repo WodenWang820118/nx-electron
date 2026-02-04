@@ -31,6 +31,40 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex, request, "Database error");
     }
 
+        @ExceptionHandler(DatabaseOperationException.class)
+        public ResponseEntity<Map<String, Object>> handleDatabaseOperation(
+            DatabaseOperationException ex,
+            HttpServletRequest request
+        ) {
+        return buildErrorResponse(
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            ex,
+            request,
+            "Database operation failed",
+            Map.of(
+                "errorCode", ex.getErrorCode(),
+                "operation", ex.getOperation()
+            )
+        );
+        }
+
+            @ExceptionHandler(DatabaseInitializationException.class)
+            public ResponseEntity<Map<String, Object>> handleDatabaseInitialization(
+                DatabaseInitializationException ex,
+                HttpServletRequest request
+            ) {
+            return buildErrorResponse(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                ex,
+                request,
+                "Database initialization failed",
+                Map.of(
+                    "errorCode", ex.getErrorCode(),
+                    "databasePath", ex.getDatabasePath()
+                )
+            );
+            }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Map<String, Object>> handleBadRequest(IllegalArgumentException ex, HttpServletRequest request) {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex, request, "Bad request");
@@ -41,12 +75,22 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex, request, "Internal server error");
     }
 
-    private ResponseEntity<Map<String, Object>> buildErrorResponse(
+        private ResponseEntity<Map<String, Object>> buildErrorResponse(
             HttpStatus status,
             Exception ex,
             HttpServletRequest request,
             String error
-    ) {
+        ) {
+        return buildErrorResponse(status, ex, request, error, Map.of());
+        }
+
+        private ResponseEntity<Map<String, Object>> buildErrorResponse(
+            HttpStatus status,
+            Exception ex,
+            HttpServletRequest request,
+            String error,
+            Map<String, Object> extra
+        ) {
         // Always log full details server-side.
         logger.error("Unhandled exception for {} {}", request.getMethod(), request.getRequestURI(), ex);
 
@@ -58,6 +102,10 @@ public class GlobalExceptionHandler {
         body.put("method", request.getMethod());
         body.put("exception", ex.getClass().getName());
         body.put("message", ex.getMessage());
+
+        if (extra != null && !extra.isEmpty()) {
+            body.putAll(extra);
+        }
 
         Throwable root = rootCause(ex);
         if (root != null && root != ex) {

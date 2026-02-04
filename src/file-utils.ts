@@ -1,4 +1,4 @@
-import { appendFileSync, mkdirSync } from 'node:fs';
+import { appendFileSync, mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 function logToFile(path: string, message: string, type = 'info') {
@@ -14,6 +14,20 @@ function logToFile(path: string, message: string, type = 'info') {
   }
 }
 
+function writeStartupSummary(path: string, summary: string) {
+  const summaryPath = join(path, 'startup-summary.txt');
+  const timestamp = new Date().toISOString();
+  const content = `=== Application Startup Summary ===\nGenerated: ${timestamp}\n\n${summary}\n`;
+
+  try {
+    mkdirSync(path, { recursive: true });
+    writeFileSync(summaryPath, content);
+  } catch (error) {
+    console.error('Failed to write startup summary:', error);
+  }
+}
+
 export {
   logToFile,
+  writeStartupSummary,
 };

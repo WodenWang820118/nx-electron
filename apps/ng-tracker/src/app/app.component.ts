@@ -6,6 +6,7 @@ import { HeaderComponent } from './shared/components/header.component';
 import { FooterComponent } from './shared/components/footer.component';
 import { ConfirmDialogComponent } from './shared/components/confirm-dialog.component';
 import { ThemeService } from './shared/services/theme.service';
+import { ToastModule } from 'primeng/toast';
 @Component({
   selector: 'app-root',
   // Import components/directives used in the template. Since they're
@@ -16,9 +17,11 @@ import { ThemeService } from './shared/services/theme.service';
     HeaderComponent,
     FooterComponent,
     ConfirmDialogComponent,
+    ToastModule,
   ],
   template: `
     @defer {
+    <p-toast position="top-right" />
     <div
       class="min-h-screen flex flex-col bg-gray-50 dark:bg-slate-950 app-shell"
     >

@@ -1,6 +1,8 @@
 import { Component, signal } from '@angular/core';
 import { TaskService } from '../../../shared/services/task.service';
 import { Task } from '../../../interfaces/task.interface';
+import { formatDatabaseError } from '../../../shared/utils/error-formatter';
+import { MessageService } from 'primeng/api';
 import { TaskItemComponent } from './task-item.component';
 import { InputTextModule } from 'primeng/inputtext';
 import { ButtonModule } from 'primeng/button';
@@ -110,7 +112,10 @@ export class TasksComponent {
   searchQuery = '';
   private readonly searchSubject = new Subject<string>();
 
-  constructor(private taskService: TaskService) {
+  constructor(
+    private taskService: TaskService,
+    private messageService: MessageService
+  ) {
     // Set up debounced search
     this.searchSubject.pipe(debounceTime(300)).subscribe((query) => {
       this.currentPage.set(1);
@@ -150,9 +155,14 @@ export class TasksComponent {
         this.loading.set(false);
       },
       error: (err) => {
-        this.error.set(
-          err instanceof Error ? err.message : 'An error occurred'
-        );
+        const errorMessage = formatDatabaseError(err);
+        this.error.set(errorMessage);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: errorMessage,
+          life: 5000,
+        });
         this.loading.set(false);
       },
     });

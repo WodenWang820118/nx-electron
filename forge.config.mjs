@@ -76,7 +76,10 @@ const resolvedProfile = PROFILES[APP_PROFILE] ?? PROFILES['ng-nest'];
 const config = {
   packagerConfig: {
     asar: true,
-    extraResource: resolvedProfile.extraResource,
+    extraResource: [
+      ...resolvedProfile.extraResource,
+      './java-runtime',
+    ],
   },
   rebuildConfig: {},
   makers: [

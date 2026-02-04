@@ -11,11 +11,13 @@ import { providePrimeNG } from 'primeng/config';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import Aura from '@primeuix/themes/aura';
 import { ThemeService } from './shared/services/theme.service';
+import { MessageService } from 'primeng/api';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(APP_ROUTES),
     provideHttpClient(),
+    MessageService,
     providePrimeNG({
       ripple: true,
       theme: {

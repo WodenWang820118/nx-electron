@@ -1,6 +1,6 @@
 import { execSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { existsSync, writeFileSync, unlinkSync } from 'node:fs';
+import { resolve, join } from 'node:path';
 
 function run(command, options = {}) {
   execSync(command, { stdio: 'inherit', ...options });
@@ -24,6 +24,23 @@ function inferBackendProject(profile) {
 
 function prepareSpringDist() {
   run('node tools/prepare-spring-dist.mjs');
+}
+
+function cleanupLogFiles(backendName) {
+  const distDir = resolve(`dist/${backendName}`);
+  const errorLog = join(distDir, 'error.log');
+  const infoLog = join(distDir, 'info.log');
+  
+  try {
+    if (existsSync(errorLog)) unlinkSync(errorLog);
+    if (existsSync(infoLog)) unlinkSync(infoLog);
+  } catch (err) {
+    console.warn('Warning: Could not remove old log files:', err.message);
+  }
+  
+  writeFileSync(errorLog, '', 'utf8');
+  writeFileSync(infoLog, '', 'utf8');
+  console.log(`Log files cleaned for ${backendName}`);
 }
 
 function installNodeBackendDeps(backendName) {
@@ -66,4 +83,5 @@ if (backend === 'spring-backend') {
     },
   });
   installNodeBackendDeps(backend);
+  cleanupLogFiles(backend);
 }

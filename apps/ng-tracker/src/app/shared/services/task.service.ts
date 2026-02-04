@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { catchError, Observable } from 'rxjs';
 import { Task } from '../../interfaces/task.interface';
 import { environment } from '../../../environments/environment';
+import { formatDatabaseError } from '../utils/error-formatter';
 
 function resolveTaskApiUrl(): string {
   // In Electron we have nodeIntegration enabled for the main window, so env vars are accessible.
@@ -75,7 +76,8 @@ export class TaskService {
       .get<PaginatedResponse<Task>>(TASK_API_URL, { params: httpParams })
       .pipe(
         catchError((error) => {
-          console.log('Error: ', error);
+          console.error('Task API Error:', formatDatabaseError(error));
+          console.error('Full error details:', error);
           throw error;
         })
       );
@@ -84,7 +86,8 @@ export class TaskService {
   deleteTask(task: Task): Observable<Task> {
     return this.http.delete<Task>(`${TASK_API_URL}/${task.id}`).pipe(
       catchError((error) => {
-        console.log('Error: ', error);
+        console.error('Delete Task Error:', formatDatabaseError(error));
+        console.error('Full error details:', error);
         return [];
       })
     );
@@ -95,7 +98,8 @@ export class TaskService {
       .put<Task>(`${TASK_API_URL}/${task.id}`, task, httpOptions)
       .pipe(
         catchError((error) => {
-          console.log('Error: ', error);
+          console.error('Update Task Error:', formatDatabaseError(error));
+          console.error('Full error details:', error);
           return [];
         })
       );
@@ -106,7 +110,8 @@ export class TaskService {
       .post<Task>(`${TASK_API_URL}/create`, task, httpOptions)
       .pipe(
         catchError((error) => {
-          console.log('Error: ', error);
+          console.error('Add Task Error:', formatDatabaseError(error));
+          console.error('Full error details:', error);
           return [];
         })
       );
