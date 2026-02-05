@@ -6770,6 +6770,7 @@ packages:
 
   'electron-tracker-suite@file:':
     resolution: {directory: '', type: directory}
+    engines: {node: '>=24.0.0'}
 
   electron-winstaller@5.4.0:
     resolution: {integrity: sha512-bO3y10YikuUwUuDUQRM4KfwNkKhnpVO7IPdbsrejwN9/AABJzzTQ4GeHwyzNSrVO+tEH3/Np255a3sVZpZDjvg==}

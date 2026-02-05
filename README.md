@@ -4,7 +4,7 @@
 
 This is a comprehensive Electron app showcasing multiple frontend and backend technologies integrated into a single monorepo using Nx. The project demonstrates how to build cross-platform desktop applications with various modern web frameworks and backend services.
 
-**Technologies**: Angular, Vue 3, React 19, NestJS, Express, Spring Boot, SQLite3, TypeORM, Electron, and Nx.
+**Technologies**: Angular 21, Vue 3, React 19, NestJS, Express, Spring Boot, SQLite3, TypeORM, Electron, and Nx.
 
 ## Project Structure
 
@@ -24,7 +24,7 @@ The monorepo includes three different backend implementations:
 
 - **nest-backend**: NestJS backend with TypeORM and SQLite3
 - **express-backend**: Express.js backend with TypeORM and SQLite3
-- **spring-backend**: Spring Boot (Java) backend with JPA
+- **spring-backend**: Spring Boot (Java) backend with JPA (JDK is necessary in `/java-runtime` to publish)
 
 ## Getting Started
 
