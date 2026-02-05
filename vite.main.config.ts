@@ -1,13 +1,16 @@
 import { defineConfig } from 'vite';
-import { builtinModules } from 'module';
-import { resolve } from 'path';
+import { builtinModules } from 'node:module';
 import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
+import { resolve,dirname } from 'node:path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export default defineConfig({
+  define: {
+    // Embed build-time environment variables into the bundle
+    'process.env.APP_PROFILE': JSON.stringify(process.env.APP_PROFILE || 'ng-nest'),
+  },
   build: {
     outDir: '.vite/build',
     lib: {

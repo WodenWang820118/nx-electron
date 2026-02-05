@@ -1,0 +1,42 @@
+{
+  "name": "spring-backend",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/spring-backend/src",
+  "targets": {
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "mvn -f apps/spring-backend/pom.xml spring-boot:run"
+      },
+      "configurations": {
+        "development": {
+          "command": "mvn -f apps/spring-backend/pom.xml spring-boot:run"
+        },
+        "production": {
+          "command": "mvn -f apps/spring-backend/pom.xml spring-boot:run"
+        }
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "mvn -f pom.xml -DskipTests package && node --loader ts-node/esm tools/prepare-spring-dist.ts"
+      },
+      "outputs": ["{workspaceRoot}/dist/spring-backend"]
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "mvn -f pom.xml test"
+      }
+    },
+    "clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "mvn -f pom.xml clean"
+      }
+    }
+  },
+  "tags": ["backend", "java", "spring"]
+}
