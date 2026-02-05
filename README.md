@@ -30,9 +30,9 @@ The monorepo includes three different backend implementations:
 
 ### Prerequisites
 
-- Node.js (v18 or higher)
+- Node.js (v24 or higher)
 - pnpm package manager
-- For Spring backend: JDK 17+ and Maven
+- For Spring backend: JDK 25+ and Maven
 
 ### Installation
 
