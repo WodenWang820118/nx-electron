@@ -21,7 +21,7 @@
     "build": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "mvn -f pom.xml -DskipTests package && node tools/prepare-spring-dist.mjs"
+        "command": "mvn -f pom.xml -DskipTests package && node --loader ts-node/esm tools/prepare-spring-dist.ts"
       },
       "outputs": ["{workspaceRoot}/dist/spring-backend"]
     },

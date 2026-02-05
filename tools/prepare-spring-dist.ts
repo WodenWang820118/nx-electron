@@ -1,14 +1,32 @@
-import { existsSync, mkdirSync, readdirSync, copyFileSync, writeFileSync, unlinkSync, rmSync } from 'node:fs';
-import { resolve, join } from 'node:path';
+/*
+  Converted from prepare-spring-dist.mjs to TypeScript
+  - Keeps original synchronous semantics
+  - Adds //#region blocks for clearer editor folding
+*/
 
-function ensureDir(path) {
+//#region Imports
+import {
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  copyFileSync,
+  writeFileSync,
+  unlinkSync,
+  rmSync,
+  Dirent,
+} from 'node:fs';
+import { resolve, join } from 'node:path';
+//#endregion
+
+//#region Utilities
+function ensureDir(path: string): void {
   if (!existsSync(path)) mkdirSync(path, { recursive: true });
 }
 
-function pickJar(targetDir) {
+function pickJar(targetDir: string): string | null {
   if (!existsSync(targetDir)) return null;
 
-  const entries = readdirSync(targetDir, { withFileTypes: true });
+  const entries: Dirent[] = readdirSync(targetDir, { withFileTypes: true });
   const jars = entries
     .filter((e) => e.isFile())
     .map((e) => e.name)
@@ -21,8 +39,10 @@ function pickJar(targetDir) {
   if (jars.length === 0) return null;
   return join(targetDir, jars[jars.length - 1]);
 }
+//#endregion
 
-function main() {
+//#region Main
+function main(): void {
   // Maven output directory for this repo's pom.xml is workspaceRoot/target by default.
   // Keep apps/spring-backend/target as a fallback for older layouts.
   const rootTarget = resolve('target');
@@ -31,7 +51,7 @@ function main() {
   const jar = pickJar(rootTarget) ?? pickJar(appTarget);
   if (!jar) {
     throw new Error(
-      `No .jar found under ${rootTarget} or ${appTarget}. Did "mvn -f pom.xml package" run?`
+      `No .jar found under ${rootTarget} or ${appTarget}. Did "mvn -f pom.xml package" run?`,
     );
   }
 
@@ -44,8 +64,9 @@ function main() {
     try {
       rmSync(appFolder, { recursive: true, force: true });
       console.log('Removed duplicate app/ folder');
-    } catch (err) {
-      console.warn('Warning: Could not remove app/ folder:', err.message);
+    } catch (err: unknown) {
+      const msg = (err as Error)?.message ?? String(err);
+      console.warn('Warning: Could not remove app/ folder:', msg);
     }
   }
 
@@ -56,14 +77,15 @@ function main() {
   // Clean up old log files and create empty ones
   const errorLog = join(distDir, 'error.log');
   const infoLog = join(distDir, 'info.log');
-  
+
   try {
     if (existsSync(errorLog)) unlinkSync(errorLog);
     if (existsSync(infoLog)) unlinkSync(infoLog);
-  } catch (err) {
-    console.warn('Warning: Could not remove old log files:', err.message);
+  } catch (err: unknown) {
+    const msg = (err as Error)?.message ?? String(err);
+    console.warn('Warning: Could not remove old log files:', msg);
   }
-  
+
   writeFileSync(errorLog, '', 'utf8');
   writeFileSync(infoLog, '', 'utf8');
 
@@ -71,4 +93,11 @@ function main() {
   console.log('Log files cleaned and reset');
 }
 
+// If executed directly with ts-node or after compilation, run main.
+// Exported for programmatic usage and tests.
+export { main };
+
+// Run immediately when invoked as a script (e.g. `ts-node tools/prepare-spring-dist.ts`).
+// Calling unconditionally is acceptable for small build scripts.
 main();
+//#endregion

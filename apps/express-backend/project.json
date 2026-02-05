@@ -20,7 +20,7 @@
         "outputHashing": "none",
         "outputFileName": "main.js",
         "externalDependencies": "all",
-        "skipTypeChecking": true,
+        "typeCheckOptions": false,
         "assets": ["apps/express-backend/src/assets"]
       },
       "configurations": {
