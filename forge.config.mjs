@@ -1,8 +1,3 @@
-// import { MakerSquirrel } from '@electron-forge/maker-squirrel';
-// import { MakerDeb } from '@electron-forge/maker-deb';
-// import { MakerRpm } from '@electron-forge/maker-rpm';
-// import { FusesPlugin } from '@electron-forge/plugin-fuses';
-// import { FuseV1Options, FuseVersion } from '@electron/fuses';
 import { MakerZIP } from '@electron-forge/maker-zip';
 import { AutoUnpackNativesPlugin } from '@electron-forge/plugin-auto-unpack-natives';
 import { VitePlugin } from '@electron-forge/plugin-vite';
@@ -72,22 +67,21 @@ const PROFILES = {
 };
 
 const resolvedProfile = PROFILES[APP_PROFILE] ?? PROFILES['ng-nest'];
+const needsJavaRuntime = APP_PROFILE.includes('spring');
 
 const config = {
   packagerConfig: {
+    // Ensure artifacts are unique per profile when running multiple publishes.
+    // MakerZIP derives its output zip name from the packaged app directory name.
+    name: `electron-tracker-suite-${APP_PROFILE}`,
     asar: true,
     extraResource: [
       ...resolvedProfile.extraResource,
-      './java-runtime',
+      ...(needsJavaRuntime ? ['./dist/java-runtime'] : []),
     ],
   },
   rebuildConfig: {},
-  makers: [
-    // new MakerSquirrel({}),
-    new MakerZIP({}, ['darwin', 'linux', 'win32']),
-    // new MakerDeb({}),
-    // new MakerRpm({}),
-  ],
+  makers: [new MakerZIP({}, ['darwin', 'linux', 'win32'])],
   plugins: [
     new AutoUnpackNativesPlugin({}),
     new VitePlugin({
@@ -113,17 +107,6 @@ const config = {
         },
       ],
     }),
-    // Fuses are used to enable/disable various Electron functionality
-    // at package time, before code signing the application
-    // new FusesPlugin({
-    //   version: FuseVersion.V1,
-    //   [FuseV1Options.RunAsNode]: true,
-    //   [FuseV1Options.EnableCookieEncryption]: true,
-    //   [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: false,
-    //   [FuseV1Options.EnableNodeCliInspectArguments]: false,
-    //   [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
-    //   [FuseV1Options.OnlyLoadAppFromAsar]: true,
-    // }),
   ],
   publishers: [
     {

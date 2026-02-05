@@ -20,7 +20,7 @@
         "outputHashing": "none",
         "outputFileName": "main.js",
         "externalDependencies": "all",
-        "skipTypeChecking": true,
+        "typeCheckOptions": false,
         "assets": ["apps/nest-backend/src/assets"]
       },
       "configurations": {

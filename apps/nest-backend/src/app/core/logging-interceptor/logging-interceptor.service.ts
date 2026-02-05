@@ -3,16 +3,16 @@ import {
   NestInterceptor,
   ExecutionContext,
   CallHandler,
+  Logger,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { Logger } from '@nestjs/common';
 
 export function Log(message?: string): MethodDecorator {
   return function (
     target: object,
     propertyKey: string | symbol,
-    descriptor: PropertyDescriptor
+    descriptor: PropertyDescriptor,
   ) {
     // Set metadata to be used by interceptor (for controllers)
     Reflect.defineMetadata('log-context', true, target, propertyKey);
@@ -42,18 +42,18 @@ export function Log(message?: string): MethodDecorator {
               const elapsed = Date.now() - start;
               Logger.log(
                 `${logMessage} - Completed in ${elapsed}ms`,
-                logContext
+                logContext,
               );
               if (res) {
                 Logger.debug(
                   `Result: ${JSON.stringify(res, null, 2)}`,
-                  logContext
+                  logContext,
                 );
               }
               return res;
             })
             .catch((error) => {
-              Logger.error(`${error.message}`, error.stack, logContext);
+              Logger.error(`${error}`, error, logContext);
               throw error;
             });
         } else {
@@ -63,13 +63,13 @@ export function Log(message?: string): MethodDecorator {
           if (result) {
             Logger.debug(
               `Result: ${JSON.stringify(result, null, 2)}`,
-              logContext
+              logContext,
             );
           }
           return result;
         }
-      } catch (error) {
-        Logger.error(`${error.message}`, error.stack, logContext);
+      } catch (error: unknown) {
+        Logger.error(`${error}`, error, logContext);
         throw error;
       }
     };
@@ -89,7 +89,7 @@ export class LoggingInterceptor implements NestInterceptor {
     const isLoggingEnabled = Reflect.getMetadata(
       'log-context',
       target,
-      methodName
+      methodName,
     );
 
     if (isLoggingEnabled) {
@@ -110,12 +110,12 @@ export class LoggingInterceptor implements NestInterceptor {
             const elapsedTime = Date.now() - now;
             this.logger.log(
               `${customMessage} - Completed in ${elapsedTime}ms`,
-              logContext
+              logContext,
             );
             if (data) {
               this.logger.debug(
                 `Result: ${JSON.stringify(data, null, 2)}`,
-                logContext
+                logContext,
               );
             }
           },
@@ -123,7 +123,7 @@ export class LoggingInterceptor implements NestInterceptor {
             // Log error
             this.logger.error(`${error.message}, ${error.stack}`, logContext);
           },
-        })
+        }),
       );
     }
 
